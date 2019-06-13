@@ -12,6 +12,9 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Aplication Load Balancer(ALB) logs](#alblogs)
 * [Route53 DNS Query log](#r53)
 * [Logs for AWS Lambda](#lambda)
+* [CloudFront Access Logs](#cloudfront)
+* [Amazon Redshift Logs](#redshift)
+
 
 * [CloudWatch Logs](#cloudwatchlogs)
 
@@ -353,21 +356,26 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
 
-## CloudFront Access Logs
+## <a name="cloudfront"></a>CloudFront Access Logs
 * Log coverage:
     * Logs every user request that CloudFront receives. These access logs are available for both web and RTMP distributions
     * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html
+    * Process:
+        * CloudFront routes each request to the appropriate edge location.
+        * CloudFront writes data about each request to a log file specific to that distribution. For example, information about requests related to Distribution A goes into a log file just for Distribution A, and information about requests related to Distribution B goes into a log file just for Distribution B.
+        * CloudFront periodically saves the log file for a distribution in the Amazon S3 bucket that you specified when you enabled logging. CloudFront then starts saving information about subsequent requests in a new log file for the distribution.
 * Exceptions and Limits:
     * Note, however, that some or all log file entries for a time period can sometimes be delayed by up to 24 hours
 * Log record/file format:
-    * Web Distribution Log File Format
-RTMP Distribution Log File Format
-Each entry in a log file gives details about a single user request. The log files for web and for RTMP distributions are not identical, but they share the following characteristics:
-Use the W3C extended log file format. (For more information, go to http://www.w3.org/TR/WD-logfile.html.)
-Contain tab-separated values.
-Contain records that are not necessarily in chronological order.
-Contain two header lines: one with the file-format version, and another that lists the W3C fields included in each record.
-Substitute URL-encoded equivalents for spaces and non-standard characters in field values.
+    * Web Distribution Log File Format: 
+    * RTMP Distribution Log File Format
+    * Each entry in a log file gives details about a single user request. The log files for web and for RTMP distributions are not identical, but they share the following characteristics:
+        * Use the W3C extended log file format. (For more information, go to http://www.w3.org/TR/WD-logfile.html.)
+        * Contain tab-separated values.
+        * Contain records that are not necessarily in chronological order.
+        * Contain two header lines: one with the file-format version, and another that lists the W3C fields included in each record.
+        * Substitute URL-encoded equivalents for spaces and non-standard characters in field values.
+    * More details: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html#LogFileFormat
 * Delivery latency:
     * up to several times an hour 
 * Transport/Encryption in transit:
@@ -381,17 +389,21 @@ Substitute URL-encoded equivalents for spaces and non-standard characters in fie
 * Retention capabilities:
     * S3 -indefinite time/user defined
 
-## Amazon Redshift Logs
+## <a name="redshift"></a> Amazon Redshift Logs
 * Log coverage:
     * Amazon Redshift logs information about connections and user activities in your database.
     * https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html
 * Exceptions and Limits:
+    * Log files are not as current as the base system log tables, STL_USERLOG and STL_CONNECTION_LOG. Records that are older than, but not including, the latest record are copied to log files.
 * Log record/file format:
     * Amazon Redshift logs information in the following log files:
         1. Connection log — logs authentication attempts, and connections and disconnections.
         2. User log — logs information about changes to database user definitions.
+            * Create user
+            * Drop user
+            * Alter user (rename)
+            * Alter user (alter properties)
         3. User activity log — logs each query before it is run on the database.
-​
     * Logs format for each of the logs files can be found here: https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html#db-auditing-logs
 * Delivery latency:
     * depends on the Redshift cluster load. More load - more often you get logs
@@ -400,7 +412,7 @@ Substitute URL-encoded equivalents for spaces and non-standard characters in fie
 * Supported log Destinations:
     * S3 bucket
 * Encryption at rest:
-    * * S3 - AES256, S3 SSE with amazon keys
+    * * S3 - AES256, only S3 SSE with amazon keys
 * Data residency(AWS Region):
     * As per S3 bucket location
 * Retention capabilities:
