@@ -16,6 +16,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon Redshift Logs](#redshift)
 * [Amazon RDS Database Log](#rds)
 * [Kinesis Data Firehose](#firehose)
+* [Amazon ECS - AWS Fargate](#fargate)
+* [AWS WAF](#waf)
 
 
 * [CloudWatch Logs](#cloudwatchlogs)
@@ -472,7 +474,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
 
-## Amazon ECS (AWS Fargate)
+## <a name="fargate"></a> Amazon ECS (AWS Fargate)
 * Log coverage:
     * You can configure the containers in your tasks to send log information to CloudWatch Logs. This allows you to view the logs from the containers in your Fargate tasks.
     * https://docs.aws.amazon.com/AmazonECS/latest/userguide/using_awslogs.html
@@ -491,7 +493,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
 
-## AWS WAF	
+## <a name="waf"></a> AWS WAF	
 * Log coverage:
     * You can enable logging to get detailed information about traffic that is analyzed by your web ACL. Information that is contained in the logs include the time that AWS WAF received the request from your AWS resource, detailed information about the request, and the action for the rule that each request matched.
     * https://docs.aws.amazon.com/waf/latest/developerguide/logging.html
