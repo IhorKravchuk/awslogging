@@ -14,6 +14,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Logs for AWS Lambda](#lambda)
 * [CloudFront Access Logs](#cloudfront)
 * [Amazon Redshift Logs](#redshift)
+* [Amazon RDS Database Log](#rds)
+* [Kinesis Data Firehose](#firehose)
 
 
 * [CloudWatch Logs](#cloudwatchlogs)
@@ -418,18 +420,20 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * Retention capabilities:
     * S3 -indefinite time/user defined
 
-## Amazon RDS Database Log
+## <a name="rds"></a>  Amazon RDS Database Log
 * Log coverage:
-    * Amazon RDS Database Logs are specific to the database engine:
+    * Amazon RDS Database Logs are  very specific to the database engine:
     * https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.html
+    * You can view, download, and watch database logs using the Amazon RDS console, the AWS Command Line Interface (AWS CLI), or the Amazon RDS API
 * Exceptions and Limits:
+    * Viewing, downloading, or watching transaction logs is not supported.
 * Log record/file format:
     * DataBase engine specific:
-        1. MariaDB Database Log Files
-        2. Microsoft SQL Server Database Log Files
-        3. MySQL Database Log Files
-        4. Oracle Database Log Files
-        5. PostgreSQL Database Log Files
+        1. MariaDB Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.MariaDB.html
+        2. Microsoft SQL Server Database Log Files : https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.SQLServer.html
+        3. MySQL Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.MySQL.html
+        4. Oracle Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.Oracle.html
+        5. PostgreSQL Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.PostgreSQL.html
 * Delivery latency:
     * DB engine specific
 * Transport/Encryption in transit:
@@ -444,19 +448,19 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
     * DB-stored logs retention depends on the Db engine (3-7 days)
     * CloudWatch logs: indefinite time/user defined
 
-## Kinesis Data Firehose
+## <a name="firehose"></a>Kinesis Data Firehose
 * Log coverage:
     * Kinesis Data Firehose integrates with Amazon CloudWatch Logs so that you can view the specific error logs when the Lambda invocation for data transformation or data delivery fails
     * https://docs.aws.amazon.com/firehose/latest/dev/monitoring-with-cloudwatch-logs.html
 * Exceptions and Limits:
 * Log record/file format:
-    * two log streams named S3Delivery and RedshiftDelivery: S3Delivery log stream is used for logging errors related to delivery failure to the intermediate S3 bucket. The RedshiftDelivery log stream is used for logging errors related to Lambda invocation failure and delivery failure to your Amazon Redshift cluster.
+    * log streams named S3Delivery, RedshiftDelivery, or ElasticsearchDelivery : S3Delivery log stream is used for logging errors related to delivery failure to the intermediate S3 bucket. The RedshiftDelivery log stream is used for logging errors related to Lambda invocation failure and delivery failure to your Amazon Redshift cluster.
     * Data Delivery Errors:
         1. Amazon S3 Data Delivery Errors
         2. Amazon Redshift Data Delivery Errors
         3. Splunk Data Delivery Errors
         4. Amazon Elasticsearch Service Data Delivery Errors
-        5. Lambda Invocation Errors
+    * Lambda Invocation Errors
 * Delivery latency:
 * Transport/Encryption in transit:
     * internal to AWS
