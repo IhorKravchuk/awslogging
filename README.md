@@ -18,6 +18,9 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Kinesis Data Firehose](#firehose)
 * [Amazon ECS - AWS Fargate](#fargate)
 * [AWS WAF](#waf)
+* [API Gateway](#apig)
+* [AWS Systems Manager](#sysman)
+* [Amazon EMR](#emr)
 
 
 * [CloudWatch Logs](#cloudwatchlogs)
@@ -513,7 +516,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * Retention capabilities:
     * as for Amazon Kinesis Data Firehose
 
-## API Gateway
+## <a name="apig"></a>API Gateway
 * Log coverage:
     * Logs API requests and responses
     * https://docs.aws.amazon.com/apigateway/latest/developerguide/view-cloudwatch-log-events-in-cloudwatch-console.html
@@ -531,7 +534,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
 
-## AWS Systems Manager
+## <a name="sysman"></a> AWS Systems Manager
 * Log coverage:
     * AWS Systems Manager Agent is Amazon software that runs on your Amazon EC2 instances and your hybrid instances that are configured for Systems Manager (hybrid instances).
     you can configure SSM Agent to send log data to Amazon CloudWatch Logs
@@ -541,7 +544,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * Log record/file format:
     * system specific logs
 * Delivery latency:
-    * s per agent settings
+    * as per agent settings
 * Transport/Encryption in transit:
     * internal to AWS
 * Supported log Destinations:
@@ -549,10 +552,11 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * Encryption at rest:
     * As per CloudWatchLogs configuration
 * Data residency(AWS Region):
+    * As per CloudWatchLogs
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
 
-## Amazon EMR
+## <a name="emr"></a> Amazon EMR
 * Log coverage:
     * Amazon EMR and Hadoop both produce log files that report status on the cluster.
     There are many types of logs written to the master node. Amazon EMR writes step, bootstrap action, and instance state logs. Apache Hadoop writes logs to report the processing of jobs, tasks, and task attempts. Hadoop also records logs of its daemons.
@@ -563,6 +567,10 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
     * Apache Hadoop specific logs
     * http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/ClusterSetup.html
     * Amazon EMR writes step, bootstrap action, and instance state logs
+    * as per location:
+        * Log files available on the Master node: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-view-web-log-files.html#emr-manage-view-web-log-files-master-node
+        * Logs on the S3: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-view-web-log-files.html#emr-manage-view-web-log-files-s3
+        * Debug tool: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-view-web-log-files.html#emr-manage-view-web-log-files-debug
 * Delivery latency:
     * as logs created
 * Transport/Encryption in transit:
