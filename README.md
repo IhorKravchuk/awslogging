@@ -21,6 +21,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [API Gateway](#apig)
 * [AWS Systems Manager](#sysman)
 * [Amazon EMR](#emr)
+* [Elastic Beanstalk](#beanstalk)
+* [OpsWorks](#opsworks)
 
 
 * [CloudWatch Logs](#cloudwatchlogs)
@@ -589,31 +591,36 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
     * Instance lifetime
     * S3: indefinite time/user defined
 
-## Elastic Beanstalk
+## <a name="beanstalk"></a> Elastic Beanstalk
 * Log coverage:
     * The Amazon EC2 instances in your Elastic Beanstalk environment generate logs that you can view to troubleshoot issues with your application or configuration files. Logs created by the web server, application server, Elastic Beanstalk platform scripts, and AWS CloudFormation are stored locally on individual instances
     * https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.logging.html
 * Exceptions and Limits:
+    * Elastic Beanstalk Windows Server platforms do not support bundle logs.
 * Log record/file format:
-    * These logs contain messages about deployment activities, including messages related to configuration files (.ebextensions).
-    * Linux
-        * /var/log/eb-activity.log
-        * /var/log/eb-commandprocessor.log
-        * /var/log/eb-version-deployment.log
-    * Windows Server
-        * C:\Program Files\Amazon\ElasticBeanstalk\logs\
-        * C:\cfn\logs\cfn-init.log
-    * Each application and web server stores logs in its own folder:
-        * Apache – /var/log/httpd/
-        * IIS – C:\inetpub\wwwroot\
-        * Node.js – /var/log/nodejs/
-        * nginx – /var/log/nginx/
-        * Passenger – /var/app/support/logs/
-        * Puma – /var/log/puma/
-        * Python – /opt/python/log/
-        * Tomcat – /var/log/tomcat8/
+    * Tail Logs - are the last 100 lines of the most commonly used log files—Elastic Beanstalk operational logs and logs from the web server or application server.
+    * Bundle logs - are full logs for a wider range of log files, including logs from yum and cron and several logs from AWS CloudFormation
+    * Rotated logs 
+    * Log location on EC2 instance: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.logging.html#health-logs-instancelocation
+        * Linux
+            * /var/log/eb-activity.log
+            * /var/log/eb-commandprocessor.log
+            * /var/log/eb-version-deployment.log
+        * Windows Server
+            * C:\Program Files\Amazon\ElasticBeanstalk\logs\
+            * C:\cfn\logs\cfn-init.log
+        * Each application and web server stores logs in its own folder:
+            * Apache – /var/log/httpd/
+            * IIS – C:\inetpub\wwwroot\
+            * Node.js – /var/log/nodejs/
+            * nginx – /var/log/nginx/
+            * Passenger – /var/app/support/logs/
+            * Puma – /var/log/puma/
+            * Python – /opt/python/log/
+            * Tomcat – /var/log/tomcat8/
+    * Log Location in Amazon S3: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.logging.html#health-logs-s3location
 * Delivery latency:
-    * as logs created - near real time
+    * as logs created - near real time(only in CloudWatch)
 * Transport/Encryption in transit:
     * locally on the instance
     * logrotate to S3
@@ -634,7 +641,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
     * CloudWatch logs: indefinite time/user defined
     * Elastic Beanstalk deletes tail and bundle logs from Amazon S3 automatically 15 minutes after they are created. Rotated logs persist.
 
-## OpsWorks
+## <a name="opsworks"></a> OpsWorks
 * Log coverage:
     * To simplify the process of monitoring logs on multiple instances, AWS OpsWorks Stacks supports Amazon CloudWatch Logs
     * https://docs.aws.amazon.com/opsworks/latest/userguide/monitoring-cloudwatch-logs.html
