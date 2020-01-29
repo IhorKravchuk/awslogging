@@ -27,6 +27,13 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 
 * [CloudWatch Logs](#cloudwatchlogs)
 
+Services that logs only to the CLoudTrail (Control plane events only):
+
+* SQS
+* ECR
+* AWS Glue
+* [DynamoDB](#dynamodb)
+
 ## <a name="cloudtrail"></a> CloudTrail
 * Log coverage: 
     * all AWS API calls (covers web-ua, api or SDK actions)
@@ -748,6 +755,83 @@ Amazon CloudWatch Logs limits: https://docs.aws.amazon.com/AmazonCloudWatch/late
 
 https://aws.amazon.com/answers/logging/centralized-logging/
 ​
+
+## <a name="dynamodb"></a> DynamoDB
+* Log coverage:
+    * DynamoDB is integrated with AWS CloudTrail
+    * https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/logging-using-cloudtrail.html
+* Exceptions and Limits:
+    Only following API calls are logged
+    
+    Amazon DynamoDB: 
+    * CreateBackup
+    * CreateGlobalTable
+    * CreateTable
+    * DeleteBackup
+    * DeleteTable
+    * DescribeBackup
+    * DescribeContinuousBackups
+    * DescribeGlobalTable
+    * DescribeLimits
+    * DescribeTable
+    * DescribeTimeToLive
+    * ListBackups
+    * ListTables
+    * ListTagsOfResource
+    * ListGlobalTables
+    * RestoreTableFromBackup
+    * RestoreTableToPointInTime
+    * TagResource
+    * UntagResource
+    * UpdateGlobalTable
+    * UpdateTable
+    * UpdateTimeToLive
+    * DescribeReservedCapacity
+    * DescribeReservedCapacityOfferings
+    * DescribeScalableTargets
+    * RegisterScalableTarget
+    * PurchaseReservedCapacityOfferings
+    
+    DynamoDB Streams
+    * DescribeStream
+    * ListStreams
+    
+    DynamoDB Accelerator (DAX)
+    * CreateCluster
+    * CreateParameterGroup
+    * CreateSubnetGroup
+    * DecreaseReplicationFactor
+    * DeleteCluster
+    * DeleteParameterGroup
+    * DeleteSubnetGroup
+    * DescribeClusters
+    * DescribeDefaultParameters
+    * DescribeEvents
+    * DescribeParameterGroups
+    * DescribeParameters
+    * DescribeSubnetGroup
+    * IncreaseReplicationFactor
+    * ListTags
+    * RebootNode
+    * TagResource
+    * UntagResource
+    * UpdateCluster
+    * UpdateParameterGroup
+    * UpdateSubnetGroup
+* Log record/file format:
+    * CloudTrail log format
+* Delivery latency:
+    * as per CloudTrail SLA
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CloudTrail only
+* Encryption at rest:
+    * As per CLoudTrail configuration
+* Data residency(AWS Region):
+    * As per CLoudTrail configuration: region wehere event occur or in choosen region for the global cloudtrail
+* Retention capabilities:
+    * CloudTrail configuration based
 
 
 
