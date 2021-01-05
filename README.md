@@ -5,6 +5,11 @@ Unofficial documentation on the AWS services logging capabilities. Structured an
 official doc (missing a lot of services): https://aws.amazon.com/answers/logging/aws-native-security-logging-capabilities/
 
 * [CloudTrail](#cloudtrail)
+* [AWS ACM (Certificate Manager)](#aws_acm)
+* [API Gateway](#apig)
+* [AWS Amplify](#aws_amplify)
+* [AWS App Mesh](#aws_mesh)
+
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
 * [Elastic Load Balancer(ELB) logs (classic)](#elblogs)
@@ -18,7 +23,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Kinesis Data Firehose](#firehose)
 * [Amazon ECS - AWS Fargate](#fargate)
 * [AWS WAF](#waf)
-* [API Gateway](#apig)
+
 * [AWS Systems Manager](#sysman)
 * [Amazon EMR](#emr)
 * [Elastic Beanstalk](#beanstalk)
@@ -34,7 +39,7 @@ Services that logs only to the CLoudTrail (Control plane events only):
 * AWS Glue
 * [DynamoDB](#dynamodb)
 
-## <a name="cloudtrail"></a> CloudTrail
+## <a name="cloudtrail"></a> CloudTrail aka AWS Account itself 
 * Log coverage: 
     * all AWS API calls (covers web-ua, api or SDK actions)
     * List of the services covered by cloudtrail
@@ -43,6 +48,9 @@ Services that logs only to the CLoudTrail (Control plane events only):
       1. A trail that applies to all regions
       2. A trail that applies to one region
       3. organization trail - global for all subaccount in organization
+* Default status and how to enable:
+    * Yes, but should be configured with S3 for long-term storage or CloudWatch to enable metrics.
+    * To enable: https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html
 * Exceptions and Limits:
     * Do not cover newest services/and api calls:
     * List of the uncovered services: 
@@ -64,6 +72,99 @@ Services that logs only to the CLoudTrail (Control plane events only):
     * AWS Cloudtrail Console (EventHistory) - 90 days
     * S3 -indefinite time/user defined
     * CloudWatch Logs:  indefinitely and never expire. User can define retention policy per log group (indefinite, or from 1 day to 10years)
+
+## <a name="aws_acm"></a> AWS ACM (Certificate Manager)
+* Log coverage:
+    * API calls to CloudTrail
+    * Certs --> certificate transparency logs
+* Default status and how to enable:
+    * Enabled by default
+    * Could be disabled to prevent domain info discosure for internal or private domains: https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency
+* Exceptions and Limits:
+* Log record/file format:
+    * Certificate transparency logs
+* Delivery latency: 
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Certificate transparency logs
+* Encryption at rest:
+* Data residency(AWS Region):
+* Retention capabilities:
+
+
+## <a name="apig"></a>API Gateway
+* Log coverage:
+    * Logs API requests and responses
+    * https://docs.aws.amazon.com/apigateway/latest/developerguide/view-cloudwatch-log-events-in-cloudwatch-console.html
+* Default status and how to enable:
+    * Disabled by deafult
+    * To enable: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html
+* Exceptions and Limits:
+    * Note: API Gateway creates log groups or log streams for an API stage at the time when it is deployed
+* Log record/file format:
+* Delivery latency:
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CloudWatch Logs
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
+## <a name="aws_amplify"></a> AWS Amplify
+* Log coverage:
+    * Access logs store information about all requests that are made to your Amplify hosted app.
+    * Details: https://docs.aws.amazon.com/amplify/latest/userguide/access-logs.html
+* Default status and how to enable:
+    * Enabled by default
+* Exceptions and Limits:
+    * Need to be manually exported to S3 for longer storage
+    * One way to analyze your access logs is to use Amazon Athena
+* Log record/file format:
+    * CSV
+* Delivery latency: 
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Amplify Console
+* Encryption at rest:
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * All sites hosted on Amplify Console have logs retrievable for any two week window
+
+## <a name="aws_mesh"></a> AWS App Mesh
+* Log coverage:
+    * Access logs
+    * Statistics
+    * Proxy logs
+    * Details: https://docs.aws.amazon.com/app-mesh/latest/userguide/observability.html
+* Default status and how to enable:
+    * Disabled by default
+    * Proxy: Your specific logging level can be configured using the ENVOY_LOG_LEVEL environment variable
+    * Access Logs: Advanced configuration section of the virtual node create or update workflows.
+    * Enable access logs on Kubernetes: configure virtual nodes with access logging by adding the logging configuration to the virtual node spec
+* Exceptions and Limits:
+    * produced on the virtual nodes and use container-level primitives such as sending logs to stdout and stderr. 
+    * logs can be proxied to CloudWatch Logs via an on-host agent
+    * mixed in with the Envoy container logs
+* Log record/file format:
+* Delivery latency: 
+* Transport/Encryption in transit:
+    * produced on the virtual nodes
+    * via https to the CloudWatch Logs
+* Supported log Destinations:
+    * /dev/stdout
+    * /dev/stderr
+    * CloudWatch Logs via standard Docker log drivers such as awslogs (https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html)
+* Encryption at rest:
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * as per virtula node lifetime
+    * CloudWatch Logs:  indefinitely and never expire. User can define retention policy per log group (indefinite, or from 1 day to 10years)
+
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
 * Log coverage:
@@ -525,23 +626,6 @@ Services that logs only to the CLoudTrail (Control plane events only):
 * Retention capabilities:
     * as for Amazon Kinesis Data Firehose
 
-## <a name="apig"></a>API Gateway
-* Log coverage:
-    * Logs API requests and responses
-    * https://docs.aws.amazon.com/apigateway/latest/developerguide/view-cloudwatch-log-events-in-cloudwatch-console.html
-* Exceptions and Limits:
-    * Note: API Gateway creates log groups or log streams for an API stage at the time when it is deployed
-* Log record/file format:
-* Delivery latency:
-* Transport/Encryption in transit:
-    * internal to AWS
-* Supported log Destinations:
-    * CloudWatch Logs
-* Encryption at rest:
-    * As per CloudWatchLogs configuration
-* Data residency(AWS Region):
-* Retention capabilities:
-    * CloudWatch logs: indefinite time/user defined
 
 ## <a name="sysman"></a> AWS Systems Manager
 * Log coverage:
@@ -842,6 +926,7 @@ https://aws.amazon.com/answers/logging/centralized-logging/
 
 ## Serice Template:
 * Log coverage:
+* Default status and how to enable:
 * Exceptions and Limits:
 * Log record/file format:
 * Delivery latency:
