@@ -9,6 +9,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [API Gateway](#apig)
 * [AWS Amplify](#aws_amplify)
 * [AWS App Mesh](#aws_mesh)
+* [AWS AppSync](#appsync)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -164,6 +165,54 @@ Services that logs only to the CLoudTrail (Control plane events only):
 * Retention capabilities:
     * as per virtula node lifetime
     * CloudWatch Logs:  indefinitely and never expire. User can define retention policy per log group (indefinite, or from 1 day to 10years)
+
+## <a name="appsync"></a> AWS AppSync
+* Log coverage:
+    * request-level logs
+        * The request and response HTTP headers
+        * The GraphQL query that is being executed in the request
+        * The overall execution summary
+        * New and existing GraphQL subscriptions that are registered
+    * field-level logs
+        * Generated Request Mapping with source and arguments for each field
+        * The transformed Response Mapping for each field, which includes the data as a result of resolving that field
+        * Tracing information for each field
+* Default status and how to enable:
+    * Disabled by default
+    * To enable: https://docs.aws.amazon.com/appsync/latest/devguide/monitoring.html
+* Exceptions and Limits:
+* Log record/file format:
+    * log group is named following the /aws/appsync/apis/{graphql_api_id} format. Within each log group, the logs are further divided into log streams.
+    * Every log event is tagged with the x-amzn-RequestId of that request.
+    * request-level logs:
+        * The request and response HTTP headers
+        * The GraphQL query that is being executed in the request
+        * The overall execution summary
+        * New and existing GraphQL subscriptions that are registered
+    * field-level logs:
+        * field-Level logging is configured with the following log levels:
+            * NONE - No field-level logs are captured.
+            * ERROR - Logs the following information only for the fields that are in error: 
+                * The error section in the server response
+                * Field-level errors
+                * The generated request/response functions that got resolved for error fields 
+            * ALL - The following information is logged for all fields in the query:
+                * Field-level tracing information
+                * The generated request/response functions that got resolved for each field
+* Delivery latency:
+    * as per CloudWatchLogs
+* Transport/Encryption in transit:
+    * as per CloudWatchLogs
+* Supported log Destinations:
+    * CloudWatchLogs
+* Encryption at rest:
+    * as per CloudWatchLogs
+* Data residency(AWS Region):
+    * any region
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
+
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
@@ -919,7 +968,8 @@ https://aws.amazon.com/answers/logging/centralized-logging/
 
 
 
-
+# WishList:
+-  add samples of the each logs
 
 
 # Templates
