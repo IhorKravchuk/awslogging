@@ -21,6 +21,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS CodeDeploy](#code_deploy)
 * [AWS Config](#aws_config)
 * [Amazon Connect](#connect)
+* [AWS Data Pipeline](#data_pipe)
 
 
 * [VPC Flow Logs](#vpcflowlogs)
@@ -508,7 +509,7 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
 
 
-## <a name="aws_config></a> AWS Config
+## <a name="aws_config"></a> AWS Config
 * Log coverage:
     * configuration changes of the AWS Infrastructure
     * config rule evaluation results and resource compliance status
@@ -556,6 +557,33 @@ Database activity streams aren't supported in Aurora Serverless.
     * any region
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
+
+
+## <a name="data_pipe"></a> AWS Data Pipeline
+* Log coverage:
+    * Pipeline task logs.
+    * Details: https://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/dp-viewing-logs.html
+* Default status and how to enable:
+    * Console logs are enabled
+    * Logs to S3 disabled by default and must be configured
+* Exceptions and Limits:
+* Log record/file format:
+    * The directory structure for each pipeline within that URI is like the following:
+        * pipelineId
+            * componentName
+                * instanceId
+                   * attemptId
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Console
+    * S3
+* Encryption at rest:
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * short time in console
+    * as per S3
 
 
 
