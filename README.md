@@ -36,7 +36,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
     * [Network Load Balancer(NLB) logs](#nlblogs)
     * [Aplication Load Balancer(ALB) logs](#alblogs)
 * [Amazon EMR](#emr)
-
+* [Amazon Kinesis Data Firehose](#firehose)
+* [AWS Global Accelerator](#global_accelerator)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -46,7 +47,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 
 * [Amazon Redshift Logs](#redshift)
 * [Amazon RDS Database Log](#rds)
-* [Kinesis Data Firehose](#firehose)
+
 
 * [AWS WAF](#waf)
 
@@ -1092,8 +1093,76 @@ Database activity streams aren't supported in Aurora Serverless.
     * Instance lifetime
     * S3: indefinite time/user defined
 
+## <a name="firehose"></a>Amazon Kinesis Data Firehose
+* Log coverage:
+    * Kinesis Data Firehose integrates with Amazon CloudWatch Logs so that you can view the specific error logs when the Lambda invocation for data transformation or data delivery fails
+    * https://docs.aws.amazon.com/firehose/latest/dev/monitoring-with-cloudwatch-logs.html
+* Default status and how to enable:
+    * Disabled by default
+* Exceptions and Limits:
+* Log record/file format:
+    * log streams named S3Delivery, RedshiftDelivery, or ElasticsearchDelivery : S3Delivery log stream is used for logging errors related to delivery failure to the intermediate S3 bucket. The RedshiftDelivery log stream is used for logging errors related to Lambda invocation failure and delivery failure to your Amazon Redshift cluster.
+    * Data Delivery Errors:
+        1. Amazon S3 Data Delivery Errors
+        2. Amazon Redshift Data Delivery Errors
+        3. Splunk Data Delivery Errors
+        4. Amazon Elasticsearch Service Data Delivery Errors
+    * Lambda Invocation Errors
+* Delivery latency:
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CloudWatch Logs
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
 
-
+## <a name="global_accelerator"></a> AWS Global Accelerator
+* Log coverage:
+    * Flow logs of network traffic across network interfaces in the accelerator.
+    * Details: https://docs.aws.amazon.com/global-accelerator/latest/dg/monitoring-global-accelerator.flow-logs.html
+* Default status and how to enable:
+    * Disabled by default
+* Exceptions and Limits:
+* Log record/file format:
+    * A flow log record is a space-separated string that has the following format:
+        * <version>
+        * <aws_account_id> 
+        * <accelerator_id> 
+        * <client_ip> 
+        * <client_port> 
+        * <accelerator_ip> 
+        * <accelerator_port> 
+        * <endpoint_ip> 
+        * <endpoint_port> 
+        * <protocol> 
+        * <ip_address_type>
+        * <packets> 
+        * <bytes>
+        * <start_time> 
+        * <end_time> 
+        * <action> 
+        * <log-status> 
+        * <globalaccelerator_source_ip> 
+        * <globalaccelerator_source_port> 
+        * <endpoint_region> 
+        * <globalaccelerator_region> 
+        * <direction> 
+        * <vpc_id>
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CloudWatch Logs
+    * S3 bucket
+* Encryption at rest:
+    * S3 - AES256, S3 SSE with amazon keys or KMS
+* Data residency(AWS Region):
+    * S3 bucket from any region.
+* Retention capabilities:
+    * S3 -indefinite time/user defined
+    * CloudWatch Logs:  indefinitely and never expire. User can define retention policy per log group (indefinite, or from 1 day to 10years)
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
@@ -1315,30 +1384,6 @@ Database activity streams aren't supported in Aurora Serverless.
 * Data residency(AWS Region):
 * Retention capabilities:
     * DB-stored logs retention depends on the Db engine (3-7 days)
-    * CloudWatch logs: indefinite time/user defined
-
-## <a name="firehose"></a>Kinesis Data Firehose
-* Log coverage:
-    * Kinesis Data Firehose integrates with Amazon CloudWatch Logs so that you can view the specific error logs when the Lambda invocation for data transformation or data delivery fails
-    * https://docs.aws.amazon.com/firehose/latest/dev/monitoring-with-cloudwatch-logs.html
-* Exceptions and Limits:
-* Log record/file format:
-    * log streams named S3Delivery, RedshiftDelivery, or ElasticsearchDelivery : S3Delivery log stream is used for logging errors related to delivery failure to the intermediate S3 bucket. The RedshiftDelivery log stream is used for logging errors related to Lambda invocation failure and delivery failure to your Amazon Redshift cluster.
-    * Data Delivery Errors:
-        1. Amazon S3 Data Delivery Errors
-        2. Amazon Redshift Data Delivery Errors
-        3. Splunk Data Delivery Errors
-        4. Amazon Elasticsearch Service Data Delivery Errors
-    * Lambda Invocation Errors
-* Delivery latency:
-* Transport/Encryption in transit:
-    * internal to AWS
-* Supported log Destinations:
-    * CloudWatch Logs
-* Encryption at rest:
-    * As per CloudWatchLogs configuration
-* Data residency(AWS Region):
-* Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
 
 
