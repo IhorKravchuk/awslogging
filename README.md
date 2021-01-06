@@ -10,6 +10,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS Amplify](#aws_amplify)
 * [AWS App Mesh](#aws_mesh)
 * [AWS AppSync](#appsync)
+* [AWS Audit Manager](#audit_mngr)
+
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -212,7 +214,38 @@ Services that logs only to the CLoudTrail (Control plane events only):
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
 
-
+## <a name="audit_mngr"></a> AWS Audit Manager
+* Log coverage:
+    * Change Logs - User activity related to selected controls .
+    * Details: https://docs.aws.amazon.com/audit-manager/latest/userguide/review-controls.html#review-changelog
+    * AWS Audit Manager tracks the following user activity in changelogs:
+        * Creating an assessment
+        * Editing an assessment
+        * Completing an assessment
+        * Deleting an assessment
+        * Delegating a control set for review
+        * Submitting a reviewed control set back to the audit owner
+        * Uploading manual evidence
+        * Updating a control status
+        * Generating assessment reports
+* Default status and how to enable:
+    * Enabled by default
+* Exceptions and Limits:
+* Log record/file format:
+    * Under Changelog, a table displays the following data columns:
+        * Date – The date and time of the activity.
+        * User – The IAM user or role that performed the activity.
+        * Action – A description of the activity.
+        * Type – The associated attribute that further describes the activity.
+        * Resource – The related resource, if applicable
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Internal database in the Audit Manager service. 
+    * Change Logs can be accessed via the UI or API
+* Encryption at rest:
+* Data residency(AWS Region):
+* Retention capabilities:
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
