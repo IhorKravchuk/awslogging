@@ -22,6 +22,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS Config](#aws_config)
 * [Amazon Connect](#connect)
 * [AWS Data Pipeline](#data_pipe)
+* [AWS DataSync](#data_sync)
+* [AWS Directory Service](#directory)
 
 
 * [VPC Flow Logs](#vpcflowlogs)
@@ -586,6 +588,91 @@ Database activity streams aren't supported in Aurora Serverless.
     * as per S3
 
 
+## <a name="data_sync"></a> AWS DataSync
+* Log coverage:
+    * Detailed logging for files and objects copied between your NFS servers, SMB servers, Amazon S3 buckets, Amazon Elastic File System (EFS) file systems, and Amazon FSx for Windows File Server file systems.
+    * Details: https://docs.aws.amazon.com/datasync/latest/userguide/monitor-datasync.html#cloudwatchlogs
+* Default status and how to enable:
+    * Disabled by default, must be configured via Task settings
+    * Details: https://docs.aws.amazon.com/datasync/latest/userguide/create-task.html
+* Exceptions and Limits:
+* Log record/file format:
+* Delivery latency:
+    * as per CloudWatchLogs
+* Transport/Encryption in transit:
+    * as per CloudWatchLogs
+* Supported log Destinations:
+    * CloudWatchLogs
+* Encryption at rest:
+    * as per CloudWatchLogs
+* Data residency(AWS Region):
+    * any region
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
+## <a name="directory"></a> AWS Directory Service
+* Log coverage:
+    * Domain controller logs for Managed Microsoft AD directory.
+    * Details: https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_directory_logs.html
+* Default status and how to enable:
+    * Enabled by default.
+    * CloudWatch Logs integration is supported and must be configured   
+        * Details: https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_enable_log_forwarding.html
+* Exceptions and Limits:
+* Log record/file format:
+    * AWS logs the following events for compliance:
+        * Account Logon:
+            * Audit Credential Validation:	Success, Failure
+            * Audit Other Account Logon Events:	Success, Failure
+        * Account Management:
+            * Audit Computer Account Management:	Success, Failure
+            * Audit Other Account Management Events:	Success, Failure
+            * Audit Security Group Management:	Success, Failure
+            * Audit User Account Management:	Success, Failure
+        * Detailed Tracking:
+            * Audit DPAPI Activity:	Success, Failure
+            * Audit PNP Activity:	Success
+            * Audit Process Creation:	Success, Failure
+        * DS Access:
+            * Audit Directory: Service Access	Success, Failure
+            * Audit Directory Service Changes:	Success, Failure
+        * Logon/Logoff:
+            * Audit Account Lockout:	Success, Failure
+            * Audit Logoff:	Success
+            * Audit Logon:	Success, Failure
+            * Audit Other Logon/Logoff Events:	Success, Failure
+            * Audit Special Logon:	Success, Failure
+        * Object Access:
+            * Audit Other Object Access Events:	Success, Failure
+            * Audit Removable Storage:	Success, Failure
+            * Audit Central Access Policy Staging:	Success, Failure
+        * Policy Change:
+            * Audit Policy Change:	Success, Failure
+            * Audit Authentication Policy Change:	Success, Failure
+            * Audit Authorization Policy Change:	Success, Failure
+            * Audit MPSSVC Rule-Level Policy Change:	Success
+            * Audit Other Policy Change Events:	Failure
+        * Privilege Use:	
+            * Audit Sensitive Privilege Use:	Success, Failure
+        * System:	
+            * Audit IPsec Driver:	Success, Failure
+            * Audit Other System Events:	Success, Failure
+            * Audit Security State Change:	Success, Failure
+            * Audit Security System Extension:	Success, Failure
+            * Audit System Integrity:	Success, Failure
+* Delivery latency:
+    * as per CloudWatchLogs
+* Transport/Encryption in transit:
+    * as per CloudWatchLogs
+* Supported log Destinations:
+    * CloudWatchLogs
+* Encryption at rest:
+    * as per CloudWatchLogs
+* Data residency(AWS Region):
+    * any region
+* Retention capabilities:
+    * Default: Security logs from AWS Managed Microsoft AD domain controller instances are archived for a year.
+    * CloudWatch logs: indefinite time/user defined
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
 * Log coverage:
