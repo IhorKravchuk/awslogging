@@ -14,6 +14,9 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon Aurora](#aurora)
 * [Amazon Auto Scaling (EC2)](#auto_ec2)
 * [AWS Batch](#aws_batch)
+* [Amazon Chime](#chime)
+* [Amazon CloudFormation](#cf)
+* [CloudFront Access Logs](#cloudfront)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -22,7 +25,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Aplication Load Balancer(ALB) logs](#alblogs)
 * [Route53 DNS Query log](#r53)
 * [Logs for AWS Lambda](#lambda)
-* [CloudFront Access Logs](#cloudfront)
+
 * [Amazon Redshift Logs](#redshift)
 * [Amazon RDS Database Log](#rds)
 * [Kinesis Data Firehose](#firehose)
@@ -274,6 +277,7 @@ Database activity streams aren't supported in Aurora Serverless.
 * Log record/file format:
     * JSON
     * Details of the JSON for,mat could be found here: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html ,  Section **Audit log contents and examples**
+    * Fields: (TBD)
 * Delivery latency:
     * near real-time
 * Transport/Encryption in transit:
@@ -291,7 +295,7 @@ Database activity streams aren't supported in Aurora Serverless.
 
 ## <a name="auto_ec2"></a> Amazon Auto Scaling (EC2)
 * Log coverage:
-    * not a real log, but rather autcoscaling events
+    * autoscaling events
     * Details: https://docs.aws.amazon.com/autoscaling/ec2/userguide/ASGettingNotifications.html
 * Default status and how to enable:
     * Enabled by default
@@ -338,8 +342,114 @@ Database activity streams aren't supported in Aurora Serverless.
 * Encryption at rest:
     * As per CloudWatchLogs configuration
 * Data residency(AWS Region):
+    * regional
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
+
+## <a name="chime"></a> Amazon Chime
+* Log coverage:
+    * Voice Connector media quality metrics
+    * SIP message logs.
+    * Details: https://docs.aws.amazon.com/chime/latest/ag/monitoring-cloudwatch.html#cw-logs
+* Default status and how to enable:
+    * Disabled by default
+* Exceptions and Limits:
+* Log record/file format:
+    * Media quality metric logs
+        * JSON
+        * log group name is /aws/ChimeVoiceConnectorLogs/${VoiceConnectorID}.
+        *  Fields: (TBD)
+     * SIP message logs
+        * JSON
+        * log group name is /aws/ChimeVoiceConnectorSipMessages/${VoiceConnectorID}.
+        *  Fields: 
+            * voice_connector_id : The Amazon Chime Voice Connector ID.
+            * aws_region: The AWS Region associated with the event.
+            * event_timestamp: The time when the message is captured, in number of milliseconds since the UNIX epoch (midnight on January 1, 1970) in UTC.
+            * call_id: The Amazon Chime Voice Connector call ID.
+            * sip_message: The full SIP message that is captured.    
+* Delivery latency:
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CloudWatch Logs
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
+
+## <a name="cf"></a> Amazon CloudFormation
+* Log coverage:
+    * Stack events.
+    * CloudFormation console UI under the “Stack Events” tab
+    * Details: https://aws.amazon.com/premiumsupport/knowledge-center/cloudformation-rollback-email/
+* Default status and how to enable:
+    * Enabled by default
+    * SNS integration needs to be enabled
+* Exceptions and Limits:
+    * not exactly a log, but extremely useful event
+* Log record/file format:
+    * event
+* Delivery latency:
+    * near real time events
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * An internal CloudFormation database
+    * SNS
+* Encryption at rest:
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * as per SNS
+
+## <a name="cloudfront"></a>CloudFront Access Logs
+* Log coverage:
+    * Logs every user request that CloudFront receives. These access logs are available for both web and RTMP distributions
+    * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html
+    * Process:
+        * CloudFront routes each request to the appropriate edge location.
+        * CloudFront writes data about each request to a log file specific to that distribution. For example, information about requests related to Distribution A goes into a log file just for Distribution A, and information about requests related to Distribution B goes into a log file just for Distribution B.
+        * CloudFront periodically saves the log file for a distribution in the Amazon S3 bucket that you specified when you enabled logging. CloudFront then starts saving information about subsequent requests in a new log file for the distribution.
+    * (NEW) Real-time logs:
+        * The sampling rate for your real-time logs—that is, the percentage of requests for which you want to receive real-time log records.
+        * The specific fields that you want to receive in the log records.
+        * The specific cache behaviors (path patterns) that you want to receive real-time logs for.
+        * Details: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/real-time-logs.html
+* Default status and how to enable:
+    * Disabled by default
+* Exceptions and Limits:
+    * Note, however, that some or all log file entries for a time period can sometimes be delayed by up to 24 hours (for non-real time logs)
+* Log record/file format:
+    * Web Distribution Log File Format: 
+    * RTMP Distribution Log File Format
+    * Each entry in a log file gives details about a single user request. The log files for web and for RTMP distributions are not identical, but they share the following characteristics:
+        * Use the W3C extended log file format. (For more information, go to http://www.w3.org/TR/WD-logfile.html.)
+        * Contain tab-separated values.
+        * Contain records that are not necessarily in chronological order.
+        * Contain two header lines: one with the file-format version, and another that lists the W3C fields included in each record.
+        * Substitute URL-encoded equivalents for spaces and non-standard characters in field values.
+    * More details: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html#LogFileFormat
+    * Real-time logs details: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/real-time-logs.html
+* Delivery latency:
+    * up to several times an hour 
+    * real-time via Kinesis 
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * S3 bucket
+    * Amazon Kinesis Data Streams
+* Encryption at rest:
+    * S3 - AES256, S3 SSE with amazon keys
+    * as per Amazon Kinesis
+* Data residency(AWS Region):
+    * As per S3 bucket location
+    * As per Kinesis
+* Retention capabilities:
+    * S3 -indefinite time/user defined
+    * As per Kinesis configuration and destination/consumer (S3, ES, Redshift, Lambda, Splunk, etc)
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
@@ -648,39 +758,6 @@ Database activity streams aren't supported in Aurora Serverless.
     * any region
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
-
-## <a name="cloudfront"></a>CloudFront Access Logs
-* Log coverage:
-    * Logs every user request that CloudFront receives. These access logs are available for both web and RTMP distributions
-    * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html
-    * Process:
-        * CloudFront routes each request to the appropriate edge location.
-        * CloudFront writes data about each request to a log file specific to that distribution. For example, information about requests related to Distribution A goes into a log file just for Distribution A, and information about requests related to Distribution B goes into a log file just for Distribution B.
-        * CloudFront periodically saves the log file for a distribution in the Amazon S3 bucket that you specified when you enabled logging. CloudFront then starts saving information about subsequent requests in a new log file for the distribution.
-* Exceptions and Limits:
-    * Note, however, that some or all log file entries for a time period can sometimes be delayed by up to 24 hours
-* Log record/file format:
-    * Web Distribution Log File Format: 
-    * RTMP Distribution Log File Format
-    * Each entry in a log file gives details about a single user request. The log files for web and for RTMP distributions are not identical, but they share the following characteristics:
-        * Use the W3C extended log file format. (For more information, go to http://www.w3.org/TR/WD-logfile.html.)
-        * Contain tab-separated values.
-        * Contain records that are not necessarily in chronological order.
-        * Contain two header lines: one with the file-format version, and another that lists the W3C fields included in each record.
-        * Substitute URL-encoded equivalents for spaces and non-standard characters in field values.
-    * More details: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html#LogFileFormat
-* Delivery latency:
-    * up to several times an hour 
-* Transport/Encryption in transit:
-    * internal to AWS
-* Supported log Destinations:
-    * S3 bucket
-* Encryption at rest:
-    * * S3 - AES256, S3 SSE with amazon keys
-* Data residency(AWS Region):
-    * As per S3 bucket location
-* Retention capabilities:
-    * S3 -indefinite time/user defined
 
 ## <a name="redshift"></a> Amazon Redshift Logs
 * Log coverage:
