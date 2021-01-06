@@ -38,6 +38,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon EMR](#emr)
 * [Amazon Kinesis Data Firehose](#firehose)
 * [AWS Global Accelerator](#global_accelerator)
+* [AWS IoT Greengrass](#green_grass)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -1128,29 +1129,29 @@ Database activity streams aren't supported in Aurora Serverless.
 * Exceptions and Limits:
 * Log record/file format:
     * A flow log record is a space-separated string that has the following format:
-        * <version>
-        * <aws_account_id> 
-        * <accelerator_id> 
-        * <client_ip> 
-        * <client_port> 
-        * <accelerator_ip> 
-        * <accelerator_port> 
-        * <endpoint_ip> 
-        * <endpoint_port> 
-        * <protocol> 
-        * <ip_address_type>
-        * <packets> 
-        * <bytes>
-        * <start_time> 
-        * <end_time> 
-        * <action> 
-        * <log-status> 
-        * <globalaccelerator_source_ip> 
-        * <globalaccelerator_source_port> 
-        * <endpoint_region> 
-        * <globalaccelerator_region> 
-        * <direction> 
-        * <vpc_id>
+        * version
+        * aws_account_id
+        * accelerator_id
+        * client_ip
+        * client_port
+        * accelerator_ip 
+        * accelerator_port
+        * endpoint_ip
+        * endpoint_port
+        * protocol
+        * ip_address_type
+        * packets
+        * bytes
+        * start_time 
+        * end_time 
+        * action
+        * log-status
+        * globalaccelerator_source_ip
+        * globalaccelerator_source_port
+        * endpoint_region
+        * globalaccelerator_region 
+        * direction
+        * vpc_id
 * Transport/Encryption in transit:
     * internal to AWS
 * Supported log Destinations:
@@ -1163,6 +1164,39 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
     * S3 -indefinite time/user defined
     * CloudWatch Logs:  indefinitely and never expire. User can define retention policy per log group (indefinite, or from 1 day to 10years)
+
+
+## <a name="green_grass"></a> AWS IoT Greengrass
+* Log coverage:
+    * The AWS IoT Greengrass Core software can write logs to Amazon CloudWatch and to the local file system of your core device.
+    * Lambda functions and connectors running on the core can also write logs to CloudWatch Logs and the local file system.
+    * Details: https://docs.aws.amazon.com/greengrass/latest/developerguide/greengrass-logs-overview.html
+* Default status and how to enable:
+    * Enabled by default to the local filesystem
+    * CloudWatch integration requires configuration: 
+        * Logging is configured at the group level. 
+        * Details: https://docs.aws.amazon.com/greengrass/latest/developerguide/greengrass-logs-overview.html#config-logs
+* Exceptions and Limits:
+    * Changes to logging settings take effect after you deploy the group.
+    * uses batches to send logs to the Cloudwatch -> you can log at a rate higher than five requests per second per log stream.
+    * if Lambda function logs more than 5 MB/second for a prolonged period of time, the internal processing pipeline eventually fills up. The theoretical worst case is 6 MB per Lambda function.
+    * logging component signs requests to CloudWatch using the normal Signature Version 4 signing process. If the system time on the AWS IoT Greengrass core device is out of sync by more than 15 minutes, then the requests are rejected.
+    * disk space must be allocate for logging.
+    * if your AWS IoT Greengrass core device is configured to log only to CloudWatch and there's no internet connectivity, you have no way to retrieve the logs currently in the memory.
+    * When Lambda functions are terminated (for example, during deployment), a few seconds' worth of logs are not written to CloudWatch.
+* Log record/file format:
+    * All AWS IoT Greengrass log entries include a timestamp, log level, and information about the event.
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Local file system
+    * CloudWatch Logs
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
