@@ -28,6 +28,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon DocumentDB](#document_db)
 * [Amazon DynamoDB, streams](#dynamodb_stream)
 * [Amazon ECS - AWS Fargate](#fargate)
+* [Amazon EKS (Elastic Kubernetes Service)](#eks)
+* [Amazon ElastiCache for Redis](#cache)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -782,6 +784,70 @@ Database activity streams aren't supported in Aurora Serverless.
 * Data residency(AWS Region):
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
+
+
+## <a name="eks"></a> Amazon EKS (Elastic Kubernetes Service)
+* Log coverage:
+    * control plane logs:
+        * Kubernetes control plane API
+        * audit
+        * authenticator
+        * controller manager
+        * scheduler
+        * Details: https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html
+    * worker node logs
+    * task container logs
+    * General EKS loging details: https://docs.aws.amazon.com/eks/latest/userguide/logging-monitoring.html
+* Default status and how to enable:
+    * Control Plane:
+        * Disabled by default
+        * To enable: https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html,  **Enabling and disabling control plane logs** section
+* Exceptions and Limits:
+* Log record/file format:
+    * Cluster control plane:
+        * /aws/eks/<cluster-name>/cluster
+        * streams are:
+            * Kubernetes API server component logs (api) – kube-apiserver-<nnn...>
+            * Audit (audit) – kube-apiserver-audit-<nnn...>
+            * Authenticator (authenticator) – authenticator-<nnn...>
+            * Controller manager (controllerManager) – kube-controller-manager-<nnn...>
+            * Scheduler (scheduler) – kube-scheduler-<nnn...>
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Control Plane:
+        * CloudWatch Logs
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * As per CloudWatchLogs configuration
+
+## <a name="cache"></a> Amazon ElastiCache for Redis
+* Log coverage:
+    * events for different cluster-level activities (failure or success in adding new nodes, modifications to the security groups, etc.)
+    * Details: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/ECEvents.Viewing.html
+* Default status and how to enable:
+    * Enabled by default as evens
+    * SNS integration needs to be enabled: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/ECEvents.SNS.html
+* Exceptions and Limits:
+    * not exactly a log, but extremely useful event
+* Log record/file format:
+    * event (JSON)
+* Delivery latency:
+    * near real time events
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * console
+    * EventBridge
+    * SNS
+* Encryption at rest:
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * as per SNS
+    * as per EventBridge
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
