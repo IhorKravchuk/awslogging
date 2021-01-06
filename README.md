@@ -39,6 +39,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon Kinesis Data Firehose](#firehose)
 * [AWS Global Accelerator](#global_accelerator)
 * [AWS IoT Greengrass](#green_grass)
+* [Amazon Image Builder (EC2)](#image_builder)
+* [AWS Import/Export](#aws_import)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -1197,6 +1199,56 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
 
+## <a name="image_builder"></a> Amazon Image Builder (EC2)
+* Log coverage:
+    * Build and debug logs.
+    * Details: https://docs.aws.amazon.com/imagebuilder/latest/userguide/how-image-builder-works.html#image-builder-logs
+* Default status and how to enable:
+    * Enabled for the CloudWatch Logs
+        * to disable: You can opt out of CloudWatch streaming by removing the following permissions associated with the instance profile.
+    * Disabled for the S3
+* Exceptions and Limits:
+* Log record/file format:
+    * Logs are retained on the instance and streamed to CloudWatch
+    * The logs are streamed to the following LogStream:
+        * LogGroup: /aws/imagebuilder/ImageName
+        * LogStream: ImageVersion/ImageBuildVersion["x.x.x/x"]
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Instance
+    * CloudWatch Logs
+    * s3    
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+    * As per S3 configuration
+* Data residency(AWS Region):
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
+## <a name="aws_import"></a> AWS Import/Export
+* Log coverage:
+    * Import job logs.
+    * Details: http://s3.amazonaws.com/awsdocs/ImportExport/latest/AWSImportExport-dg.pdf
+* Default status and how to enable:
+    * Enabled by default
+    * manual config for the S3 upload (logs bucket option in the job manifest)
+* Exceptions and Limits:
+* Log record/file format:
+    * CSV
+    * nformation about each file loaded to or from your storage device
+    * The log file name of an export job always ends with the phrase export-log- followed by your JOBID.
+    * For example, if the JOBID is 53TX4, the log file name would end in export-log-53TX4.
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Device
+    * s3    
+* Encryption at rest:
+    * As per S3 configuration
+* Data residency(AWS Region):
+* Retention capabilities:
+    * As per S3 
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
