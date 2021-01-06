@@ -11,7 +11,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS App Mesh](#aws_mesh)
 * [AWS AppSync](#appsync)
 * [AWS Audit Manager](#audit_mngr)
-
+* [Amazon Aurora](#aurora)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -246,6 +246,46 @@ Services that logs only to the CLoudTrail (Control plane events only):
 * Encryption at rest:
 * Data residency(AWS Region):
 * Retention capabilities:
+
+## <a name="aurora"></a> Amazon Aurora
+* Log coverage:
+    * To monitor database activity with Amazon Aurora, you can use the Database Activity Streams feature. Database activity streams provide a near real-time stream of the activity in your relational database. 
+    * Details: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html
+* Default status and how to enable:
+    * Disabled by default
+    * To enable: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html#DBActivityStreams.Enabling
+* Exceptions and Limits:
+    * For Aurora **PostgreSQL**, database activity streams are supported for version 2.3 or higher and versions 3.0 or higher. For PostgreSQL version compatibility, see Engine versions for Amazon Aurora PostgreSQL.
+    * For Aurora **MySQL**, database activity streams are supported for version 2.08 or higher, which is compatible with MySQL version 5.7.
+    * You can start a database activity stream on the primary or secondary cluster of an Aurora global database. For DB engine version requirements, see Limitations of Amazon Aurora global databases.
+    * Database activity streams support the DB instance classes listed for Aurora in Supported DB engines for DB instance classes, with some exceptions:
+    * For Aurora **PostgreSQL**, you can't use streams with the **db.t3.medium** instance class.
+    * For **Aurora MySQL**, you can't use streams with any of the **db.t2 or db.t3** instance classes.
+    * Database activity streams aren't supported in the following AWS Regions:
+        * China (Beijing) Region, cn-north-1
+        * China (Ningxia) Region, cn-northwest-1
+        * Asia Pacific (Osaka-Local), ap-northeast-3
+        * AWS GovCloud (US-East), us-gov-east-1
+        * AWS GovCloud (US-West), us-gov-west-1
+    * Database activity streams require use of AWS Key Management Service (AWS KMS). AWS KMS is required because the activity streams are always encrypted.
+Database activity streams aren't supported in Aurora Serverless.
+* Log record/file format:
+    * JSON
+    * Details of the JSON for,mat could be found here: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/DBActivityStreams.html ,  Section **Audit log contents and examples**
+* Delivery latency:
+    * near real-time
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Kinesis
+* Encryption at rest:
+    * always encrypted via KMS
+* Data residency(AWS Region):
+    * regional
+    * see list of unsupported region above (Exceptions and Limits)
+* Retention capabilities:
+    * as per Kinesis based destination:
+        * Amazon Kinesis Data Firehose and from there to S3
+        * AWS Lambda
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
