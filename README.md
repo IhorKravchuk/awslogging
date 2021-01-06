@@ -24,7 +24,9 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS Data Pipeline](#data_pipe)
 * [AWS DataSync](#data_sync)
 * [AWS Directory Service](#directory)
-
+* [AWS DMS (Database Migration Service)](#dms)
+* [Amazon DocumentDB](#document_db)
+* [Amazon DynamoDB, streams](#dynamodb_stream)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -673,6 +675,88 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
     * Default: Security logs from AWS Managed Microsoft AD domain controller instances are archived for a year.
     * CloudWatch logs: indefinite time/user defined
+
+
+## <a name="dms"></a> AWS DMS (Database Migration Service)
+* Log coverage:
+    * Migration task logs.
+    * Details: https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.TaskSettings.Logging.html
+* Default status and how to enable:
+    * Disabled by default, 
+    * Using logging task settings, you can specify which component activities are logged and what amount of information is written to the log. 
+    * Details: https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.TaskSettings.Logging.html
+* Exceptions and Limits:
+* Log record/file format:
+    * You can specify logging for the following actions:
+        * SOURCE_UNLOAD – Data is unloaded from the source database.
+        * SOURCE_CAPTURE – Data is captured from the source database.
+        * TARGET_LOAD – Data is loaded into the target database.
+        * TARGET_APPLY – Data and data definition language (DDL) statements are applied to the target database.
+        * TASK_MANAGER – The task manager triggers an event.
+    * The levels of severity are in order from lowest to highest level of information. The higher levels always include information from the lower levels.
+        * LOGGER_SEVERITY_ERROR – Error messages are written to the log.
+        * LOGGER_SEVERITY_WARNING – Warnings and error messages are written to the log.
+        * LOGGER_SEVERITY_INFO – Informational messages, warnings, and error messages are written to the log.
+        * LOGGER_SEVERITY_DEFAULT – Informational messages, warnings, and error messages are written to the log.
+        * LOGGER_SEVERITY_DEBUG – Debug messages, informational messages, warnings, and error messages are written to the log.
+        * LOGGER_SEVERITY_DETAILED_DEBUG – All information is written to the log.
+* Delivery latency:
+    * as per CloudWatchLogs
+* Transport/Encryption in transit:
+    * as per CloudWatchLogs
+* Supported log Destinations:
+    * CloudWatchLogs
+* Encryption at rest:
+    * as per CloudWatchLogs
+* Data residency(AWS Region):
+    * any region
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
+## <a name="document_db"></a> Amazon DocumentDB
+* Log coverage:
+    * Profiler logs of the execution time and details of operations that were performed on the cluster.
+    * Details: https://docs.aws.amazon.com/documentdb/latest/developerguide/logging-and-monitoring.html
+* Default status and how to enable:
+    * Disabled by default
+* Exceptions and Limits:
+* Log record/file format:
+* Delivery latency:
+    * as per CloudWatchLogs
+* Transport/Encryption in transit:
+    * as per CloudWatchLogs
+* Supported log Destinations:
+    * CloudWatchLogs
+* Encryption at rest:
+    * as per CloudWatchLogs
+* Data residency(AWS Region):
+    * any region
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
+## <a name="dynamodb_stream"></a> Amazon DynamoDB, streams
+* Log coverage:
+    * Changes to items stored in a DynamoDB table via streams
+        Details: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/streamsmain.html
+    * API action via CloudTrail
+        * Details: [DynamoDB](#dynamodb)
+* Default status and how to enable:
+    * Streams are disabled by default
+* Exceptions and Limits:
+    * not exactly a log, but stream of the changes to items stored in a DynamoDB table
+* Log record/file format:
+* Delivery latency:
+    * Pull model over HTTP using
+* Transport/Encryption in transit:
+    * Looks like None?: HTTP or HTTP/2
+* Supported log Destinations:
+    * DynamoDb
+    * Kinesis
+* Encryption at rest:
+* Data residency(AWS Region):
+* Retention capabilities:
+    * Kinesis Data Streams for DynamoDB: up to 1 year
+    * DynamoDB Streams: 24 hours
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
 * Log coverage:
