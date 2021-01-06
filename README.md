@@ -12,6 +12,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS AppSync](#appsync)
 * [AWS Audit Manager](#audit_mngr)
 * [Amazon Aurora](#aurora)
+* [Amazon Auto Scaling (EC2)](#auto_ec2)
+* [AWS Batch](#aws_batch)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -286,6 +288,58 @@ Database activity streams aren't supported in Aurora Serverless.
     * as per Kinesis based destination:
         * Amazon Kinesis Data Firehose and from there to S3
         * AWS Lambda
+
+## <a name="auto_ec2"></a> Amazon Auto Scaling (EC2)
+* Log coverage:
+    * not a real log, but rather autcoscaling events
+    * Details: https://docs.aws.amazon.com/autoscaling/ec2/userguide/ASGettingNotifications.html
+* Default status and how to enable:
+    * Enabled by default
+    * SNS integration needs to be enabled
+* Exceptions and Limits:
+    * not exactly a log, but extremely useful event
+* Log record/file format:
+    * event
+* Delivery latency:
+    * near real time events
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * An internal Auto Scaling database of event activity
+    * SNS
+* Encryption at rest:
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * as per SNS
+
+## <a name="aws_batch"></a> AWS Batch
+* Log coverage:
+    * All jobs logs
+    * With the new release of customer logging driver support, customers are now able to adjust how the job output is logged.
+    * Logging details: https://docs.aws.amazon.com/batch/latest/userguide/using_cloudwatch_logs.html
+    * Custom logging details: https://aws.amazon.com/blogs/compute/custom-logging-with-aws-batch/
+* Default status and how to enable:
+    * Enabled by default only to stdout
+* Exceptions and Limits:
+* Log record/file format:
+    * default - stdout
+    * with custom logging driver:
+        * splunk
+        * fluentd
+        * json-files
+        * syslog
+        * gelf
+        * journald
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * stdout
+    * CloudWatch Logs via awslog driver (https://docs.aws.amazon.com/batch/latest/userguide/using_awslogs.html)
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
