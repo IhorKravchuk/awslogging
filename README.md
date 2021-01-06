@@ -30,12 +30,17 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon ECS - AWS Fargate](#fargate)
 * [Amazon EKS (Elastic Kubernetes Service)](#eks)
 * [Amazon ElastiCache for Redis](#cache)
+* [AWS Elastic Beanstalk](#beanstalk)
+* Load Balancers:
+    * [Elastic Load Balancer(ELB) logs (classic)](#elblogs)
+    * [Network Load Balancer(NLB) logs](#nlblogs)
+    * [Aplication Load Balancer(ALB) logs](#alblogs)
+* [Amazon EMR](#emr)
+
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
-* [Elastic Load Balancer(ELB) logs (classic)](#elblogs)
-* [Network Load Balancer(NLB) logs](#nlblogs)
-* [Aplication Load Balancer(ALB) logs](#alblogs)
+
 * [Route53 DNS Query log](#r53)
 * [Logs for AWS Lambda](#lambda)
 
@@ -46,8 +51,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS WAF](#waf)
 
 * [AWS Systems Manager](#sysman)
-* [Amazon EMR](#emr)
-* [Elastic Beanstalk](#beanstalk)
+
+
 * [OpsWorks](#opsworks)
 
 
@@ -592,7 +597,6 @@ Database activity streams aren't supported in Aurora Serverless.
     * short time in console
     * as per S3
 
-
 ## <a name="data_sync"></a> AWS DataSync
 * Log coverage:
     * Detailed logging for files and objects copied between your NFS servers, SMB servers, Amazon S3 buckets, Amazon Elastic File System (EFS) file systems, and Amazon FSx for Windows File Server file systems.
@@ -849,6 +853,248 @@ Database activity streams aren't supported in Aurora Serverless.
     * as per SNS
     * as per EventBridge
 
+## <a name="beanstalk"></a> Elastic Beanstalk
+* Log coverage:
+    * The Amazon EC2 instances in your Elastic Beanstalk environment generate logs that you can view to troubleshoot issues with your application or configuration files. Logs created by the web server, application server, Elastic Beanstalk platform scripts, and AWS CloudFormation are stored locally on individual instances
+    * https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.logging.html
+* Default status and how to enable:
+    * Enabled only for the local filesystem storage
+    * CloudWatch forwarding needs to be enabled.
+* Exceptions and Limits:
+    * Elastic Beanstalk Windows Server platforms do not support bundle logs.
+* Log record/file format:
+    * Tail Logs - are the last 100 lines of the most commonly used log files—Elastic Beanstalk operational logs and logs from the web server or application server.
+    * Bundle logs - are full logs for a wider range of log files, including logs from yum and cron and several logs from AWS CloudFormation
+    * Rotated logs 
+    * Log location on EC2 instance: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.logging.html#health-logs-instancelocation
+        * Linux
+            * /var/log/eb-activity.log
+            * /var/log/eb-commandprocessor.log
+            * /var/log/eb-version-deployment.log
+        * Windows Server
+            * C:\Program Files\Amazon\ElasticBeanstalk\logs\
+            * C:\cfn\logs\cfn-init.log
+        * Each application and web server stores logs in its own folder:
+            * Apache – /var/log/httpd/
+            * IIS – C:\inetpub\wwwroot\
+            * Node.js – /var/log/nodejs/
+            * nginx – /var/log/nginx/
+            * Passenger – /var/app/support/logs/
+            * Puma – /var/log/puma/
+            * Python – /opt/python/log/
+            * Tomcat – /var/log/tomcat8/
+    * Log Location in Amazon S3: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.logging.html#health-logs-s3location
+* Delivery latency:
+    * as logs created - near real time(only in CloudWatch)
+* Transport/Encryption in transit:
+    * locally on the instance
+    * logrotate to S3
+* Supported log Destinations:
+    * instance
+    * CloudWatch Logs
+    * S3
+* Encryption at rest:
+    * Instance encryption
+    * As per CloudWatchLogs configuration (see below)
+    * AES256 Encryption: Amazon S3 server-side encryption (SSE)
+* Data residency(AWS Region):
+    * As per instance location
+    * any region
+    * As per S3 bucket location
+* Retention capabilities:
+    * Instance lifetime
+    * CloudWatch logs: indefinite time/user defined
+    * Elastic Beanstalk deletes tail and bundle logs from Amazon S3 automatically 15 minutes after they are created. Rotated logs persist.
+
+## <a name="elblogs"></a>Elastic Load Balancer(ELB) logs (classic)
+* Log coverage:
+    * access logs capture detailed information about requests sent to your load balancer. Each log contains information such as the time the request was received, the client's IP address, latencies, request paths, and server responses
+    * https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/access-log-collection.html
+* Default status and how to enable:
+    * Disabled by default
+* Exceptions and Limits:
+    * Note: Elastic Load Balancing logs requests sent to the load balancer, including requests that never made it to the back-end instances
+​
+    * Limits: Elastic Load Balancing logs requests on a best-effort basis. We recommend that you use access logs to understand the nature of the requests, not as a complete accounting of all requests.
+* Log record/file format:
+    * Each log entry contains the details of a single request made to the load balancer. All fields in the log entry are delimited by spaces.
+    * Format:
+        1. timestamp
+        2. elb client:port
+        3. backend:port
+        4. request_processing_time
+        5.  backend_processing_time
+        6. response_processing_time
+        7. elb_status_code
+        8. backend_status_code
+        9. received_bytes
+        10. sent_bytes
+        11. "request"
+        12. "user_agent"
+        13. ssl_cipher
+        14. ssl_protocol
+* Delivery latency:
+    * User defined publishing interval
+    (5 min-60 min)
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * S3 bucket
+* Encryption at rest:
+    * * S3 - AES256, S3 SSE with amazon keys
+* Data residency(AWS Region):
+    * As per S3 bucket location
+* Retention capabilities:
+    * S3 -indefinite time/user defined
+
+## <a name="nlblogs"></a> Network Load Balancer(NLB) Logs	
+* Log coverage:
+    * Access logs that capture detailed information about the TLS requests sent to your Network Load Balancer.
+    * https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html
+* Default status and how to enable:
+    * Disabled by default
+* Exceptions and Limits:
+    * Access logs are created only if the load balancer has a TLS listener and they contain information only about TLS requests.
+* Log record/file format:
+    * All fields are delimited by spaces. When new fields are introduced, they are added to the end of the log entry.
+    * Log file name format: *bucket[/prefix]/AWSLogs/aws-account-id/elasticloadbalancing/region/yyyy/mm/dd/aws-account-id_elasticloadbalancing_region_load-balancer-id_end-time_random-string.log.gz*
+    * Access log fields:
+        * type: The type of listener. The supported value is tls.
+        * version: The version of the log entry. The supported version is 1.0.
+        * timestamp: The timestamp recorded at the end of the TLS connection, in ISO 8601 format.
+        * elb: The resource ID of the load balancer.
+        * listener: The resource ID of the TLS listener for the connection.
+        * client:port : The IP address and port of the client.
+        * listener:port : The IP address and port of the listener.
+        * connection_time: The total time for the connection to complete, from start to closure, in milliseconds.
+        * tls_handshake_time: The total time for the TLS handshake to complete after the TCP connection is established, including client-side delays, in milliseconds. This time is included in the connection_time field.
+        * received_bytes: The count of bytes received by the load balancer from the client, after decryption.
+        * sent_bytes: The count of bytes sent by the load balancer to the client, before encryption.
+        * incoming_tls_alert: The integer value of TLS alerts received by the load balancer from the client, if present. Otherwise, this value is set to -.
+        * chosen_cert_arn: The ARN of the certificate served to the client. If no valid client hello message is sent, this value is set to -.
+        * chosen_cert_serial: Reserved for future use. This value is always set to -.
+        * tls_cipher: The cipher suite negotiated with the client, in OpenSSL format. If TLS negotiation does not complete, this value is set to -.
+        * tls_protocol_version: The TLS protocol negotiated with the client, in string format. The possible values are tlsv10, tlsv11, and tlsv12. If TLS negotiation does not complete, this value is set to -.
+        * tls_named_group: Reserved for future use. This value is always set to -.
+        * domain_name: The value of the server_name extension in the client hello message. This value is URL-encoded. If no valid client hello message is sent or the extension is not present, this value is set to -.
+* Delivery latency:
+    * each 5 min
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * S3 bucket
+* Encryption at rest:
+    * * S3 - AES256, S3 SSE with amazon keys
+* Data residency(AWS Region):
+    * As per S3 bucket location
+    * The bucket must be located in the same region as the load balancer.
+* Retention capabilities:
+    * S3 -indefinite time/user defined
+
+## <a name="alblogs"></a>Application Load Balancer(ALB) logs	
+* Log coverage:
+    * Elastic Load Balancing logs requests sent to the load balancer, including requests that never made it to the targets. For example, if a client sends a malformed request, or there are no healthy targets to respond to the request, the request is still logged. 
+    * https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html
+* Default status and how to enable:
+    * Disabled by default
+* Exceptions and Limits:
+    * Note: Elastic Load Balancing does not log health check requests
+    * Limits: Elastic Load Balancing logs requests on a best-effort basis. We recommend that you use access logs to understand the nature of the requests, not as a complete accounting of all requests.
+* Log record/file format:
+    * Each log entry contains the details of a single request (or connection in the case of WebSockets) made to the load balancer. For WebSockets, an entry is written only after the connection is closed. If the upgraded connection can't be established, the entry is the same as for an HTTP or HTTPS request.
+    All fields are delimited by spaces. When new fields are introduced, they are added to the end of the log entry.
+    * Log file name format: *bucket[/prefix]/AWSLogs/aws-account-id/elasticloadbalancing/region/yyyy/mm/dd/aws-account-id_elasticloadbalancing_region_load-balancer-id_end-time_ip-address_random-string.log.gz*
+    * Access log fields:
+        * type: The type of request or connection. The possible values are as follows (ignore any other values):
+            * http — HTTP
+            * https — HTTP over SSL/TLS
+            * h2 — HTTP/2 over SSL/TLS
+            * ws — WebSockets
+            * wss — WebSockets over SSL/TLS
+        * timestamp: The time when the load balancer generated a response to the client, in ISO 8601 format. For WebSockets, this is the time when the connection is closed.
+        * elb: The resource ID of the load balancer. If you are parsing access log entries, note that resources IDs can contain forward slashes (/).
+        * client:port : The IP address and port of the requesting client.
+        * target:port : The IP address and port of the target that processed this request. 
+            * If the client didn't send a full request, the load balancer can't dispatch the request to a target, and this value is set to -.
+            * If the target is a Lambda function, this value is set to -.
+            * If the request is blocked by AWS WAF, this value is set to - and the value of elb_status_code is set to 403.
+        * request_processing_time: The total time elapsed (in seconds, with millisecond precision) from the time the load balancer received the request until the time it sent it to a target.
+            * This value is set to -1 if the load balancer can't dispatch the request to a target. This can happen if the target closes the connection before the idle timeout or if the client sends a malformed request.
+            * This value can also be set to -1 if the registered target does not respond before the idle timeout.
+        * target_processing_time: The total time elapsed (in seconds, with millisecond precision) from the time the load balancer sent the request to a target until the target started to send the response headers.
+            * This value is set to -1 if the load balancer can't dispatch the request to a target. This can happen if the target closes the connection before the idle timeout or if the client sends a malformed request.
+            * This value can also be set to -1 if the registered target does not respond before the idle timeout.
+        * response_processing_time: The total time elapsed (in seconds, with millisecond precision) from the time the load balancer received the response header from the target until it started to send the response to the client. This includes both the queuing time at the load balancer and the connection acquisition time from the load balancer to the client.This value is set to -1 if the load balancer can't send the request to a target. This can happen if the target closes the connection before the idle timeout or if the client sends a malformed request.
+        * elb_status_code: The status code of the response from the load balancer.
+        * target_status_code: The status code of the response from the target. This value is recorded only if a connection was established to the target and the target sent a response. Otherwise, it is set to -.
+        received_bytes: The size of the request, in bytes, received from the client (requester). For HTTP requests, this includes the headers. For WebSockets, this is the total number of bytes received from the client on the connection.
+        * sent_bytes: The size of the response, in bytes, sent to the client (requester). For HTTP requests, this includes the headers. For WebSockets, this is the total number of bytes sent to the client on the connection.
+        * "request" : The request line from the client, enclosed in double quotes and logged using the following format: HTTP method + protocol://host:port/uri + HTTP version. The load balancer preserves the URL sent by the client, as is, when recording the request URI. It does not set the content type for the access log file. When you process this field, consider how the client sent the URL.
+        * "user_agent": A User-Agent string that identifies the client that originated the request, enclosed in double quotes. The string consists of one or more product identifiers, product[/version]. If the string is longer than 8 KB, it is truncated.
+        * ssl_cipher: [HTTPS listener] The SSL cipher. This value is set to - if the listener is not an HTTPS listener.
+        * ssl_protocol:[HTTPS listener] The SSL protocol. This value is set to - if the listener is not an HTTPS listener.
+        * target_group_arn: The Amazon Resource Name (ARN) of the target group.
+        * "trace_id": The contents of the X-Amzn-Trace-Id header, enclosed in double quotes.
+        * "domain_name": [HTTPS listener] The SNI domain provided by the client during the TLS handshake, enclosed in double quotes. This value is set to - if the client doesn't support SNI or the domain doesn't match a certificate and the default certificate is presented to the client.
+        * "chosen_cert_arn": [HTTPS listener] The ARN of the certificate presented to the client, enclosed in double quotes. This value is set to session-reused if the session is reused.
+        * matched_rule_priority: The priority value of the rule that matched the request. If a rule matched, this is a value from 1 to 50,000. If no rule matched and the default action was taken, this value is set to 0. If an error occurs during rules evaluation, it is set to -1. For any other error, it is set to -.
+        * request_creation_time: The time when the load balancer received the request from the client, in ISO 8601 format.
+        * "actions_executed": The actions taken when processing the request, enclosed in double quotes. This value is a comma-separated list that can include the following possible values: waf, waf-failed, authenticate, redirect, fixed-response, and forward. If no action was taken, such as for a malformed request, this value is set to -.
+        * "redirect_url": The URL of the redirect target for the location header of the HTTP response, enclosed in double quotes. If no redirect actions were taken, this value is set to -.
+        * "error_reason": The error reason code, enclosed in double quotes. If the request failed, this is one of the error codes described in Error Reason Codes . If the actions taken do not include an authenticate action or the target is not a Lambda function, this value is set to -.
+            * Error Reason Codes: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#error-reason-codes
+* Delivery latency:
+    * each 5 min
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * S3 bucket
+* Encryption at rest:
+    * * S3 - AES256, S3 SSE with amazon keys
+* Data residency(AWS Region):
+    * As per S3 bucket location
+* Retention capabilities:
+    * S3 -indefinite time/user defined
+
+
+## <a name="emr"></a> Amazon EMR
+* Log coverage:
+    * Amazon EMR and Hadoop both produce log files that report status on the cluster.
+    There are many types of logs written to the master node. Amazon EMR writes step, bootstrap action, and instance state logs. Apache Hadoop writes logs to report the processing of jobs, tasks, and task attempts. Hadoop also records logs of its daemons.
+    * https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-view-web-log-files.html
+* Default status and how to enable:
+    * Enabled by default
+* Exceptions and Limits:
+    * By default, Amazon EMR clusters launched using the console automatically archive log files to Amazon S3. You can specify your own log path, or you can allow the console to automatically generate a log path for you. For clusters launched using the CLI or API, you must configure Amazon S3 log archiving manually.
+* Log record/file format:
+    * Apache Hadoop specific logs
+    * http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/ClusterSetup.html
+    * Amazon EMR writes step, bootstrap action, and instance state logs
+    * as per location:
+        * Log files available on the Master node: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-view-web-log-files.html#emr-manage-view-web-log-files-master-node
+        * Logs on the S3: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-view-web-log-files.html#emr-manage-view-web-log-files-s3
+        * Debug tool: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-view-web-log-files.html#emr-manage-view-web-log-files-debug
+* Delivery latency:
+    * as logs created
+* Transport/Encryption in transit:
+    * local to host
+* Supported log Destinations:
+    * Master node
+    * S3
+* Encryption at rest:
+    * EMR encryption:
+    https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html
+    * AES256 Encryption: Amazon S3 server-side encryption (SSE)
+* Data residency(AWS Region):
+    * As per node location
+    * As per S3 bucket location
+* Retention capabilities:
+    * Instance lifetime
+    * S3: indefinite time/user defined
+
+
+
+
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
 * Log coverage:
@@ -952,150 +1198,7 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
     * S3 -indefinite time/user defined
 
-## <a name="elblogs"></a>Elastic Load Balancer(ELB) logs (classic)
-* Log coverage:
-    * access logs capture detailed information about requests sent to your load balancer. Each log contains information such as the time the request was received, the client's IP address, latencies, request paths, and server responses
-    * https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/access-log-collection.html
-* Exceptions and Limits:
-    * Note: Elastic Load Balancing logs requests sent to the load balancer, including requests that never made it to the back-end instances
-​
-    * Limits: Elastic Load Balancing logs requests on a best-effort basis. We recommend that you use access logs to understand the nature of the requests, not as a complete accounting of all requests.
-* Log record/file format:
-    * Each log entry contains the details of a single request made to the load balancer. All fields in the log entry are delimited by spaces.
-    * Format:
-        1. timestamp
-        2. elb client:port
-        3. backend:port
-        4. request_processing_time
-        5.  backend_processing_time
-        6. response_processing_time
-        7. elb_status_code
-        8. backend_status_code
-        9. received_bytes
-        10. sent_bytes
-        11. "request"
-        12. "user_agent"
-        13. ssl_cipher
-        14. ssl_protocol
-* Delivery latency:
-    * User defined publishing interval
-    (5 min-60 min)
-* Transport/Encryption in transit:
-    * internal to AWS
-* Supported log Destinations:
-    * S3 bucket
-* Encryption at rest:
-    * * S3 - AES256, S3 SSE with amazon keys
-* Data residency(AWS Region):
-    * As per S3 bucket location
-* Retention capabilities:
-    * S3 -indefinite time/user defined
 
-## <a name="nlblogs"></a> Network Load Balancer(NLB) Logs	
-* Log coverage:
-    * Access logs that capture detailed information about the TLS requests sent to your Network Load Balancer.
-    * https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html
-
-* Exceptions and Limits:
-    * Access logs are created only if the load balancer has a TLS listener and they contain information only about TLS requests.
-* Log record/file format:
-    * All fields are delimited by spaces. When new fields are introduced, they are added to the end of the log entry.
-    * Log file name format: *bucket[/prefix]/AWSLogs/aws-account-id/elasticloadbalancing/region/yyyy/mm/dd/aws-account-id_elasticloadbalancing_region_load-balancer-id_end-time_random-string.log.gz*
-    * Access log fields:
-        * type: The type of listener. The supported value is tls.
-        * version: The version of the log entry. The supported version is 1.0.
-        * timestamp: The timestamp recorded at the end of the TLS connection, in ISO 8601 format.
-        * elb: The resource ID of the load balancer.
-        * listener: The resource ID of the TLS listener for the connection.
-        * client:port : The IP address and port of the client.
-        * listener:port : The IP address and port of the listener.
-        * connection_time: The total time for the connection to complete, from start to closure, in milliseconds.
-        * tls_handshake_time: The total time for the TLS handshake to complete after the TCP connection is established, including client-side delays, in milliseconds. This time is included in the connection_time field.
-        * received_bytes: The count of bytes received by the load balancer from the client, after decryption.
-        * sent_bytes: The count of bytes sent by the load balancer to the client, before encryption.
-        * incoming_tls_alert: The integer value of TLS alerts received by the load balancer from the client, if present. Otherwise, this value is set to -.
-        * chosen_cert_arn: The ARN of the certificate served to the client. If no valid client hello message is sent, this value is set to -.
-        * chosen_cert_serial: Reserved for future use. This value is always set to -.
-        * tls_cipher: The cipher suite negotiated with the client, in OpenSSL format. If TLS negotiation does not complete, this value is set to -.
-        * tls_protocol_version: The TLS protocol negotiated with the client, in string format. The possible values are tlsv10, tlsv11, and tlsv12. If TLS negotiation does not complete, this value is set to -.
-        * tls_named_group: Reserved for future use. This value is always set to -.
-        * domain_name: The value of the server_name extension in the client hello message. This value is URL-encoded. If no valid client hello message is sent or the extension is not present, this value is set to -.
-* Delivery latency:
-    * each 5 min
-* Transport/Encryption in transit:
-    * internal to AWS
-* Supported log Destinations:
-    * S3 bucket
-* Encryption at rest:
-    * * S3 - AES256, S3 SSE with amazon keys
-* Data residency(AWS Region):
-    * As per S3 bucket location
-    * The bucket must be located in the same region as the load balancer.
-* Retention capabilities:
-    * S3 -indefinite time/user defined
-
-## <a name="alblogs"></a>Application Load Balancer(ALB) logs	
-* Log coverage:
-    * Elastic Load Balancing logs requests sent to the load balancer, including requests that never made it to the targets. For example, if a client sends a malformed request, or there are no healthy targets to respond to the request, the request is still logged. 
-    * https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html
-* Exceptions and Limits:
-    * Note: Elastic Load Balancing does not log health check requests
-    * Limits: Elastic Load Balancing logs requests on a best-effort basis. We recommend that you use access logs to understand the nature of the requests, not as a complete accounting of all requests.
-* Log record/file format:
-    * Each log entry contains the details of a single request (or connection in the case of WebSockets) made to the load balancer. For WebSockets, an entry is written only after the connection is closed. If the upgraded connection can't be established, the entry is the same as for an HTTP or HTTPS request.
-    All fields are delimited by spaces. When new fields are introduced, they are added to the end of the log entry.
-    * Log file name format: *bucket[/prefix]/AWSLogs/aws-account-id/elasticloadbalancing/region/yyyy/mm/dd/aws-account-id_elasticloadbalancing_region_load-balancer-id_end-time_ip-address_random-string.log.gz*
-    * Access log fields:
-        * type: The type of request or connection. The possible values are as follows (ignore any other values):
-            * http — HTTP
-            * https — HTTP over SSL/TLS
-            * h2 — HTTP/2 over SSL/TLS
-            * ws — WebSockets
-            * wss — WebSockets over SSL/TLS
-        * timestamp: The time when the load balancer generated a response to the client, in ISO 8601 format. For WebSockets, this is the time when the connection is closed.
-        * elb: The resource ID of the load balancer. If you are parsing access log entries, note that resources IDs can contain forward slashes (/).
-        * client:port : The IP address and port of the requesting client.
-        * target:port : The IP address and port of the target that processed this request. 
-            * If the client didn't send a full request, the load balancer can't dispatch the request to a target, and this value is set to -.
-            * If the target is a Lambda function, this value is set to -.
-            * If the request is blocked by AWS WAF, this value is set to - and the value of elb_status_code is set to 403.
-        * request_processing_time: The total time elapsed (in seconds, with millisecond precision) from the time the load balancer received the request until the time it sent it to a target.
-            * This value is set to -1 if the load balancer can't dispatch the request to a target. This can happen if the target closes the connection before the idle timeout or if the client sends a malformed request.
-            * This value can also be set to -1 if the registered target does not respond before the idle timeout.
-        * target_processing_time: The total time elapsed (in seconds, with millisecond precision) from the time the load balancer sent the request to a target until the target started to send the response headers.
-            * This value is set to -1 if the load balancer can't dispatch the request to a target. This can happen if the target closes the connection before the idle timeout or if the client sends a malformed request.
-            * This value can also be set to -1 if the registered target does not respond before the idle timeout.
-        * response_processing_time: The total time elapsed (in seconds, with millisecond precision) from the time the load balancer received the response header from the target until it started to send the response to the client. This includes both the queuing time at the load balancer and the connection acquisition time from the load balancer to the client.This value is set to -1 if the load balancer can't send the request to a target. This can happen if the target closes the connection before the idle timeout or if the client sends a malformed request.
-        * elb_status_code: The status code of the response from the load balancer.
-        * target_status_code: The status code of the response from the target. This value is recorded only if a connection was established to the target and the target sent a response. Otherwise, it is set to -.
-        received_bytes: The size of the request, in bytes, received from the client (requester). For HTTP requests, this includes the headers. For WebSockets, this is the total number of bytes received from the client on the connection.
-        * sent_bytes: The size of the response, in bytes, sent to the client (requester). For HTTP requests, this includes the headers. For WebSockets, this is the total number of bytes sent to the client on the connection.
-        * "request" : The request line from the client, enclosed in double quotes and logged using the following format: HTTP method + protocol://host:port/uri + HTTP version. The load balancer preserves the URL sent by the client, as is, when recording the request URI. It does not set the content type for the access log file. When you process this field, consider how the client sent the URL.
-        * "user_agent": A User-Agent string that identifies the client that originated the request, enclosed in double quotes. The string consists of one or more product identifiers, product[/version]. If the string is longer than 8 KB, it is truncated.
-        * ssl_cipher: [HTTPS listener] The SSL cipher. This value is set to - if the listener is not an HTTPS listener.
-        * ssl_protocol:[HTTPS listener] The SSL protocol. This value is set to - if the listener is not an HTTPS listener.
-        * target_group_arn: The Amazon Resource Name (ARN) of the target group.
-        * "trace_id": The contents of the X-Amzn-Trace-Id header, enclosed in double quotes.
-        * "domain_name": [HTTPS listener] The SNI domain provided by the client during the TLS handshake, enclosed in double quotes. This value is set to - if the client doesn't support SNI or the domain doesn't match a certificate and the default certificate is presented to the client.
-        * "chosen_cert_arn": [HTTPS listener] The ARN of the certificate presented to the client, enclosed in double quotes. This value is set to session-reused if the session is reused.
-        * matched_rule_priority: The priority value of the rule that matched the request. If a rule matched, this is a value from 1 to 50,000. If no rule matched and the default action was taken, this value is set to 0. If an error occurs during rules evaluation, it is set to -1. For any other error, it is set to -.
-        * request_creation_time: The time when the load balancer received the request from the client, in ISO 8601 format.
-        * "actions_executed": The actions taken when processing the request, enclosed in double quotes. This value is a comma-separated list that can include the following possible values: waf, waf-failed, authenticate, redirect, fixed-response, and forward. If no action was taken, such as for a malformed request, this value is set to -.
-        * "redirect_url": The URL of the redirect target for the location header of the HTTP response, enclosed in double quotes. If no redirect actions were taken, this value is set to -.
-        * "error_reason": The error reason code, enclosed in double quotes. If the request failed, this is one of the error codes described in Error Reason Codes . If the actions taken do not include an authenticate action or the target is not a Lambda function, this value is set to -.
-            * Error Reason Codes: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#error-reason-codes
-* Delivery latency:
-    * each 5 min
-* Transport/Encryption in transit:
-    * internal to AWS
-* Supported log Destinations:
-    * S3 bucket
-* Encryption at rest:
-    * * S3 - AES256, S3 SSE with amazon keys
-* Data residency(AWS Region):
-    * As per S3 bucket location
-* Retention capabilities:
-    * S3 -indefinite time/user defined
 
 ## <a name="r53"></a> Route53 DNS request
 * Log coverage:
@@ -1282,88 +1385,9 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
 
-## <a name="emr"></a> Amazon EMR
-* Log coverage:
-    * Amazon EMR and Hadoop both produce log files that report status on the cluster.
-    There are many types of logs written to the master node. Amazon EMR writes step, bootstrap action, and instance state logs. Apache Hadoop writes logs to report the processing of jobs, tasks, and task attempts. Hadoop also records logs of its daemons.
-    * https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-view-web-log-files.html
-* Exceptions and Limits:
-    * By default, Amazon EMR clusters launched using the console automatically archive log files to Amazon S3. You can specify your own log path, or you can allow the console to automatically generate a log path for you. For clusters launched using the CLI or API, you must configure Amazon S3 log archiving manually.
-* Log record/file format:
-    * Apache Hadoop specific logs
-    * http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/ClusterSetup.html
-    * Amazon EMR writes step, bootstrap action, and instance state logs
-    * as per location:
-        * Log files available on the Master node: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-view-web-log-files.html#emr-manage-view-web-log-files-master-node
-        * Logs on the S3: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-view-web-log-files.html#emr-manage-view-web-log-files-s3
-        * Debug tool: https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-view-web-log-files.html#emr-manage-view-web-log-files-debug
-* Delivery latency:
-    * as logs created
-* Transport/Encryption in transit:
-    * local to host
-* Supported log Destinations:
-    * Master node
-    * S3
-* Encryption at rest:
-    * EMR encryption:
-    https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-data-encryption-options.html
-    * AES256 Encryption: Amazon S3 server-side encryption (SSE)
-* Data residency(AWS Region):
-    * As per node location
-    * As per S3 bucket location
-* Retention capabilities:
-    * Instance lifetime
-    * S3: indefinite time/user defined
 
-## <a name="beanstalk"></a> Elastic Beanstalk
-* Log coverage:
-    * The Amazon EC2 instances in your Elastic Beanstalk environment generate logs that you can view to troubleshoot issues with your application or configuration files. Logs created by the web server, application server, Elastic Beanstalk platform scripts, and AWS CloudFormation are stored locally on individual instances
-    * https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.logging.html
-* Exceptions and Limits:
-    * Elastic Beanstalk Windows Server platforms do not support bundle logs.
-* Log record/file format:
-    * Tail Logs - are the last 100 lines of the most commonly used log files—Elastic Beanstalk operational logs and logs from the web server or application server.
-    * Bundle logs - are full logs for a wider range of log files, including logs from yum and cron and several logs from AWS CloudFormation
-    * Rotated logs 
-    * Log location on EC2 instance: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.logging.html#health-logs-instancelocation
-        * Linux
-            * /var/log/eb-activity.log
-            * /var/log/eb-commandprocessor.log
-            * /var/log/eb-version-deployment.log
-        * Windows Server
-            * C:\Program Files\Amazon\ElasticBeanstalk\logs\
-            * C:\cfn\logs\cfn-init.log
-        * Each application and web server stores logs in its own folder:
-            * Apache – /var/log/httpd/
-            * IIS – C:\inetpub\wwwroot\
-            * Node.js – /var/log/nodejs/
-            * nginx – /var/log/nginx/
-            * Passenger – /var/app/support/logs/
-            * Puma – /var/log/puma/
-            * Python – /opt/python/log/
-            * Tomcat – /var/log/tomcat8/
-    * Log Location in Amazon S3: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.logging.html#health-logs-s3location
-* Delivery latency:
-    * as logs created - near real time(only in CloudWatch)
-* Transport/Encryption in transit:
-    * locally on the instance
-    * logrotate to S3
-* Supported log Destinations:
-    * instance
-    * CloudWatch Logs
-    * S3
-* Encryption at rest:
-    * Instance encryption
-    * As per CloudWatchLogs configuration (see below)
-    * AES256 Encryption: Amazon S3 server-side encryption (SSE)
-* Data residency(AWS Region):
-    * As per instance location
-    * any region
-    * As per S3 bucket location
-* Retention capabilities:
-    * Instance lifetime
-    * CloudWatch logs: indefinite time/user defined
-    * Elastic Beanstalk deletes tail and bundle logs from Amazon S3 automatically 15 minutes after they are created. Rotated logs persist.
+
+
 
 ## <a name="opsworks"></a> OpsWorks
 * Log coverage:
