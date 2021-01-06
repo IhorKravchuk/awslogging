@@ -27,6 +27,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS DMS (Database Migration Service)](#dms)
 * [Amazon DocumentDB](#document_db)
 * [Amazon DynamoDB, streams](#dynamodb_stream)
+* [Amazon ECS - AWS Fargate](#fargate)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -39,7 +40,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon Redshift Logs](#redshift)
 * [Amazon RDS Database Log](#rds)
 * [Kinesis Data Firehose](#firehose)
-* [Amazon ECS - AWS Fargate](#fargate)
+
 * [AWS WAF](#waf)
 
 * [AWS Systems Manager](#sysman)
@@ -758,6 +759,31 @@ Database activity streams aren't supported in Aurora Serverless.
     * Kinesis Data Streams for DynamoDB: up to 1 year
     * DynamoDB Streams: 24 hours
 
+## <a name="fargate"></a> Amazon ECS (AWS Fargate)
+* Log coverage:
+    * You can configure the containers in your tasks to send log information to CloudWatch Logs. This allows you to view the logs from the containers in your Fargate tasks.
+    * Details: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-logging-monitoring.html
+* Default status and how to enable:
+    * Enabled for the Fargate (but you need to specify log driver)
+    * Needs to be configured for EC2
+* Exceptions and Limits:
+    * The type of information that is logged by your task's containers depends mostly on their ENTRYPOINT command. By default, the logs that are captured show the command output that you would normally see in an interactive terminal if you ran the container locally, which are the STDOUT and STDERR I/O streams.
+* Log record/file format:
+    * STDOUT and STDERR I/O streams
+* Delivery latency:
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CloudWatch Logs
+        * Details: https://docs.aws.amazon.com/AmazonECS/latest/userguide/using_awslogs.html
+    * 3d party via supported log drivers
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
+
 ## <a name="vpcflowlogs"></a> VPC Flow logs
 * Log coverage:
     * VPC
@@ -1146,24 +1172,6 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
     * CloudWatch logs: indefinite time/user defined
 
-## <a name="fargate"></a> Amazon ECS (AWS Fargate)
-* Log coverage:
-    * You can configure the containers in your tasks to send log information to CloudWatch Logs. This allows you to view the logs from the containers in your Fargate tasks.
-    * https://docs.aws.amazon.com/AmazonECS/latest/userguide/using_awslogs.html
-* Exceptions and Limits:
-    * The type of information that is logged by your task's containers depends mostly on their ENTRYPOINT command. By default, the logs that are captured show the command output that you would normally see in an interactive terminal if you ran the container locally, which are the STDOUT and STDERR I/O streams.
-* Log record/file format:
-    * STDOUT and STDERR I/O streams
-* Delivery latency:
-* Transport/Encryption in transit:
-    * internal to AWS
-* Supported log Destinations:
-    * CloudWatch Logs
-* Encryption at rest:
-    * As per CloudWatchLogs configuration
-* Data residency(AWS Region):
-* Retention capabilities:
-    * CloudWatch logs: indefinite time/user defined
 
 ## <a name="waf"></a> AWS WAF	
 * Log coverage:
