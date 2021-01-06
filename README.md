@@ -16,7 +16,12 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS Batch](#aws_batch)
 * [Amazon Chime](#chime)
 * [Amazon CloudFormation](#cf)
-* [CloudFront Access Logs](#cloudfront)
+* [CloudFront](#cloudfront)
+* [AWS CodeBuild](#code_build)
+* [AWS CodeDeploy](#code_deploy)
+* [AWS Config](#aws_config)
+* [Amazon Connect](#connect)
+
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -405,7 +410,7 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
     * as per SNS
 
-## <a name="cloudfront"></a>CloudFront Access Logs
+## <a name="cloudfront"></a>CloudFront
 * Log coverage:
     * Logs every user request that CloudFront receives. These access logs are available for both web and RTMP distributions
     * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html
@@ -450,6 +455,108 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
     * S3 -indefinite time/user defined
     * As per Kinesis configuration and destination/consumer (S3, ES, Redshift, Lambda, Splunk, etc)
+
+
+## <a name="code_build"></a> AWS CodeBuild
+* Log coverage:
+    * Job build logs
+    * Details: https://docs.aws.amazon.com/codebuild/latest/APIReference/API_LogsLocation.html 
+* Default status and how to enable:
+    * Enabled by default for the CloudWatch Logs
+    * Disabled by default for the S3
+    * Configurable during job creation
+* Exceptions and Limits:
+* Log record/file format:
+* Delivery latency:
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CodeBuild UI
+    * CloudWatch logs
+    * S3
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
+
+## <a name="code_deploy"></a> AWS CodeDeploy
+* Log coverage:
+    * Deployment logs for EC2 or on-premise deployments.
+    * Details: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-view-logs.html
+        * Instance level logs: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-view-logs.html#deployments-view-logs-instance
+        * Cloudwatch Logs: https://aws.amazon.com/blogs/devops/view-aws-codedeploy-logs-in-amazon-cloudwatch-console/
+* Default status and how to enable:
+    * Instance level: Enabled by default
+    * CloudWatch Logs: Disabled by default. 
+        * To enable ClouWatch Agent must be installed
+        * Details: https://aws.amazon.com/blogs/devops/view-aws-codedeploy-logs-in-amazon-cloudwatch-console/
+* Exceptions and Limits:
+    * Deployments to Lambda or ECS are not logged.
+* Log record/file format:
+    * Linux instance: opt/codedeploy-agent/deployment-root/deployment-logs/codedeploy-agent-deployments.log
+    * Windows instance: C:\ProgramData\Amazon\CodeDeploy\log\codedeploy-agent-log.txt
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * text file of the EC2 instance 
+    * CloudWatch Logs via CloudWatch Logs Agent
+* Encryption at rest:
+* Data residency(AWS Region):
+* Retention capabilities:
+
+
+## <a name="aws_config></a> AWS Config
+* Log coverage:
+    * configuration changes of the AWS Infrastructure
+    * config rule evaluation results and resource compliance status
+* Default status and how to enable:
+    * Config as a service is disabled by default
+    * SQS integration needs to be enabled: https://docs.aws.amazon.com/config/latest/developerguide/monitor-resource-changes.html
+* Exceptions and Limits:
+    * not exactly a log, but extremely useful events
+* Log record/file format:
+    * event
+* Delivery latency:
+    * near real time events
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * S3
+    * SQS
+    * EventBridge
+* Encryption at rest:
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * as per S3
+
+
+## <a name="connect"></a> Amazon Connect
+* Log coverage:
+    * Connect contact flows.
+    * Details: https://docs.aws.amazon.com/connect/latest/adminguide/contact-flow-logs.html#enable-contact-flow-logs
+* Default status and how to enable:
+    * CloudWatch integration is enabled by default
+    * Logging for each contact flow must be manually enabled
+* Exceptions and Limits:
+    * Logs are generated only for contact flows that include a **Set logging behavior** block with logging set to enabled
+* Log record/file format:
+    * CloudWatch Logs group associated with a Connect instances.
+* Delivery latency:
+    * as per CloudWatchLogs
+* Transport/Encryption in transit:
+    * as per CloudWatchLogs
+* Supported log Destinations:
+    * CloudWatchLogs
+* Encryption at rest:
+    * as per CloudWatchLogs
+* Data residency(AWS Region):
+    * any region
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
