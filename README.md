@@ -41,6 +41,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS IoT Greengrass](#green_grass)
 * [Amazon Image Builder (EC2)](#image_builder)
 * [AWS Import/Export](#aws_import)
+* [Amazon Kafka (Managed Streaming for Apache Kafka)](#kafka)
+* [Amazon Kendra](#kendra)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -1249,6 +1251,75 @@ Database activity streams aren't supported in Aurora Serverless.
 * Data residency(AWS Region):
 * Retention capabilities:
     * As per S3 
+
+
+## <a name="kafka"></a> Amazon Kafka (Managed Streaming for Apache Kafka)
+* Log coverage:
+    * Broker logs enable you to troubleshoot your Apache Kafka applications and to analyze their communications with your MSK cluster
+    * Details: https://docs.aws.amazon.com/msk/latest/developerguide/msk-logging.html
+* Default status and how to enable:
+    * Disabled by default
+    * to enable: Broker log delivery heading in the Monitoring section. You can specify the destinations to which you want Amazon MSK to deliver your broker logs
+* Exceptions and Limits:
+    * By default, when broker logging is enabled, Amazon MSK logs INFO level logs to the specified destinations. However, users of Apache Kafka 2.4.X and later can dynamically set the broker log level to any of the **log4j** log levels. 
+    * If you dynamically set the log level to DEBUG or TRACE, use Amazon S3 or Kinesis Data Firehose as the log destination
+    * If you use CloudWatch Logs as a log destination and you dynamically enable DEBUG or TRACE level logging, Amazon MSK may continuously deliver a sample of logs
+    * using DEBUG or TRACE level logging with CloudWatch Logs as a log destination can significantly impact broker performance and should only be used when the INFO log level is not verbose enough to determine the root cause of an issue.
+* Log record/file format:
+    * INFO-level broker logs
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * CloudWatch Logs
+    * S3
+    * Kinesis Data Firehose
+* Encryption at rest:
+    * S3: KMS
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+    * as per S3
+
+## <a name="kendra"></a> Amazon Kendra
+* Log coverage:
+    * Insight into the operation of your data sources.
+    * Data source log streams publish entries about your index synchronization jobs.
+    * Amazon Kendra logs information about processing documents while the are being indexed.
+    * Details: https://docs.aws.amazon.com/kendra/latest/dg/cloudwatch-logs.html
+* Default status and how to enable:
+    * Enabled by default
+* Exceptions and Limits:
+* Log record/file format:
+    * Log groups – Amazon Kendra stores all of your log streams in a single log group for each index
+        * log group created when the index is created. 
+        * identifier always begins with "aws/kendra/".
+    * Log streams – creates a new data source log stream in the log group for each index synchronization job that you run.
+        * Data source log streams:
+            * Each synchronization job creates a new log stream that it uses to publish entries
+            * name is: **data source id/YYYY-MM-DD-HH/data source sync job ID**
+            * new log stream is created for each synchronization job run.
+            * Log messages:
+                * document that failed to be sent for indexing.
+                * document that failed to be sent for deletion
+                * invalid metadata file for a document in an Amazon S3 bucket is found.
+        * Document log streams
+            * logs a set of messages for documents stored in an Amazon S3 data source. 
+            * logs errors only for documents stored in a Microsoft SharePoint or a database data source
+            * stream names: **YYYY-MM-DD-HH/UUID** or **dataSourceId/YYYY-MM-DD-HH/UUID**
+
+    * Log entries – Amazon Kendra creates a log entry in the log stream as it indexes documents. Each entry provides information about processing the document or any errors that are encountered.
+* Delivery latency:
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CloudWatch Logs
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+    * As per CloudWatchLogs
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
