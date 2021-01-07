@@ -47,6 +47,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS Lambda](#lambda)
 * [Amazon Lex](#lex)
 * [Amazon Lightsail](#lightsail)
+* [Amazon Neptune](#neptune)
+* [AWS Network Firewall](#net_fw)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -1452,6 +1454,79 @@ Database activity streams aren't supported in Aurora Serverless.
 * Encryption at rest:
 * Data residency(AWS Region):
 * Retention capabilities:
+
+
+## <a name="neptune"></a> Amazon Neptune
+* Log coverage:
+    * Neptune DB cluster activity
+    * Details: https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html
+* Default status and how to enable:
+    * Disabled by default
+    * enable the collection of audit logs by setting a DB cluster parameter
+* Exceptions and Limits:
+    * Log entries are not in sequential order. You can use the timestamp value for ordering them.
+    * Log files are rotated when they reach 100 MB in aggregate. This limit is not configurable
+* Log record/file format:
+    * UTF-8, CSV format. 
+    * Logs are written in multiple files, the number of which varies based on the instance size. 
+    * following comma-delimited information in rows:
+        * Timestamp: The Unix timestamp for the logged event with microsecond precision.
+        * ServerHost: The hostname or IP of the instance that the event is logged for.
+        * ClientHost: The hostname or IP that the user connected from.
+        * ConnectionType: The connection type. Can be Websocket, HTTP_POST, or HTTP_GET.
+        * Caller's IAM ARN: The ARN of the IAM user or IAM role used to sign the request. Empty if IAM authentication is disabled. Its format is: **arn:partition:service:region:account:resource**
+        * Auth Context: Contains a serialized JSON object that has authentication information. The field authenticationSucceeded is True if the user was authenticated. Empty if IAM authentication is disabled.
+        * HttpHeader: The HTTP header information. Can contain a query. Empty for WebSocket connections.
+        * Payload: The Gremlin or SPARQL query.       
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Neptine console
+    * Manual download option available
+* Encryption at rest:
+* Data residency(AWS Region):
+* Retention capabilities:
+
+## <a name="net_fw"></a> AWS Network Firewall
+* Log coverage:
+    * Network traffic logs
+        * Log type: Alert
+            * Sends logs for traffic that matches any stateful rule whose action is set to Alert or Drop.
+        * Log type: Flow:
+            * Sends logs for all network traffic that the stateless engine forwards to the stateful rules engine.
+    * Details: https://docs.aws.amazon.com/network-firewall/latest/developerguide/firewall-update-logging-configuration.html
+* Default status and how to enable:
+    * Disabled by default
+    * To enable: https://docs.aws.amazon.com/network-firewall/latest/developerguide/firewall-update-logging-configuration.html
+* Exceptions and Limits:
+    * Firewall logging is only available for traffic that you forward to the stateful rules engine.
+    * You must forward traffic to the stateful engine through stateless rule actions and stateless default actions in the firewall policy. https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateless-default-actions.html
+* Log record/file format:
+    * Flow logs are standard network traffic flow logs. Each flow log record captures the network flow for a specific 5-tuple.
+    * Alert logs report traffic that matches your stateful rules that have an action that sends an alert. A stateful rule sends alerts for the rule actions DROP and ALERT.
+    * S3
+        * folder structure that's determined by the log's ID, Region, Network Firewall log type, and the date. 
+            * s3-bucket-name/optional-s3-bucket-prefix/AWSLogs/aws-account-id/network-firewall/log-type/Region/firewall-name/timestamp/ 
+        * log file name is determined by the flow log's ID, Region, and the date and time it was created
+            * aws-account-id_network-firewall_log-type_Region_firewall-name_timestamp_hash.log.gz
+    * CloudWatch Logs
+        * log streams have the following naming format:
+            * /aws/network-firewall/log-type/firewall-name_YYYY-MM-DD-HH
+            * In the specification, the log type is either alert or flow.
+    * Kinesis Data Firehose
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * S3
+    * CloudWatch Logs
+    * Kinesis Data Firehose
+    * Details: https://docs.aws.amazon.com/network-firewall/latest/developerguide/firewall-logging-destinations.html
+* Encryption at rest:
+    * SSE-KMS or CMK-KMS
+* Data residency(AWS Region):
+* Retention capabilities:
+
+
 
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
