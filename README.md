@@ -53,12 +53,13 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon (QLDB) Quantum Ledger Database](#ledger)
 * [Amazon RDS (Relational Database Service)](#rds)
 * [Amazon Redshift](#redshift)
+* [Amazon Route53](#r53)
 
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
 
-* [Route53 DNS Query log](#r53)
+
 
 
 
@@ -81,7 +82,7 @@ Services that logs only to the CLoudTrail (Control plane events only):
 * AWS Glue
 * [DynamoDB](#dynamodb)
 
-## <a name="cloudtrail"></a> CloudTrail aka AWS Account itself 
+## <a name="cloudtrail"></a> CloudTrail or AWS Account itself 
 * Log coverage: 
     * all AWS API calls (covers web-ua, api or SDK actions)
     * List of the services covered by cloudtrail
@@ -1656,6 +1657,72 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
     * S3 -indefinite time/user defined
 
+## <a name="r53"></a> Amazon Route53
+* Log coverage:
+    * Public query logs:
+        * The domain or subdomain that was requested
+        * The date and time of the request
+        * The DNS record type (such as A or AAAA)
+        * The Route 53 edge location that responded to the DNS query
+        * The DNS response code, such as NoError or ServFail
+        * Details: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/query-logs.html
+    * Resolver query logs:
+        * The AWS Region where the VPC was created
+        * The ID of the VPC that the query originated from
+        * The IP address of the instance that the query originated from
+        * The instance ID of the resource that the query originated from
+        * The date and time that the query was first made
+        * The DNS name requested (such as prod.example.com)
+        * The DNS record type (such as A or AAAA)
+        * The DNS response code, such as NoError or ServFail
+        * The DNS response data, such as the IP address that is returned in response to the DNS query
+* Default status and how to enable:
+    * Disabled by default
+    * To enable:
+        * Public query logs: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/query-logs.html#query-logs-configuring
+        * Resolver query logs: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-query-logging-configurations-managing.html      
+* Exceptions and Limits:
+    * Query logging is available only for public hosted zones
+    * cached response will not be logged
+    * Resolver query logging logs only unique queries, not queries that Resolver is able to respond to from the cache.
+* Log record/file format:
+    * Public query logs:
+        * newline-delimited log records, Each log record represents one request and consists of space-delimited fields
+        * https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/query-logs.html#query-logs-format
+        * Fields:
+            1. Log format version
+            2. Query timestamp
+            3. Hosted zone ID
+            4. Query name
+            5. Query type
+            6. Response code
+            7. Layer 4 protocol
+            8. Route 53 edge location
+            9. Resolver IP address
+            10. EDNS client subnet
+    * Resolver query logs:
+        * Details: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-query-logs-format.html
+* Delivery latency:
+    * near real-time
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Public query logs:
+        * CloudWatch Logs
+    * Resolver query logs:
+        * Amazon CloudWatch Logs (CloudWatch Logs) log group
+        * Amazon S3 (S3) bucket
+        * Kinesis Data Firehose delivery stream
+* Encryption at rest:
+    * As per CloudWatchLogs/S3 configuration
+* Data residency(AWS Region):
+    * Public query logs:
+        * The log group must be in the US East (N. Virginia) Region.
+    * Resolver query logs:
+        * regional
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+    * S3 -indefinite time/user defined
+
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
 * Log coverage:
@@ -1759,45 +1826,6 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
     * S3 -indefinite time/user defined
 
-
-
-## <a name="r53"></a> Route53 DNS request
-* Log coverage:
-    * log information about the queries that Route 53 receives.
-    * https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/query-logs.html
-        * The domain or subdomain that was requested
-        * The date and time of the request
-        * The DNS record type (such as A or AAAA)
-        * The Route 53 edge location that responded to the DNS query
-        * The DNS response code, such as NoError or ServFail
-* Exceptions and Limits:
-    * Query logging is available only for public hosted zones
-    * cached response will not be logged
-* Log record/file format:
-    * newline-delimited log records, Each log record represents one request and consists of space-delimited fields
-    * https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/query-logs.html#query-logs-format
-    * Fields:
-        1. Log format version
-        2. Query timestamp
-        3. Hosted zone ID
-        4. Query name
-        5. Query type
-        6. Response code
-        7. Layer 4 protocol
-        8. Route 53 edge location
-        9. Resolver IP address
-        10. EDNS client subnet
-* Delivery latency:
-    * near real-time
-* Transport/Encryption in transit:
-* Supported log Destinations:
-    * CloudWatch Logs
-* Encryption at rest:
-    * As per CloudWatchLogs configuration
-* Data residency(AWS Region):
-    * The log group must be in the US East (N. Virginia) Region.
-* Retention capabilities:
-    * CloudWatch logs: indefinite time/user defined
 
 
 ## <a name="waf"></a> AWS WAF	
