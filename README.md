@@ -17,6 +17,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon Chime](#chime)
 * [Amazon CloudFormation](#cf)
 * [CloudFront](#cloudfront)
+* [AWS CloudHSM](#hsm)
 * [AWS CodeBuild](#code_build)
 * [AWS CodeDeploy](#code_deploy)
 * [AWS Config](#aws_config)
@@ -47,6 +48,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS Lambda](#lambda)
 * [Amazon Lex](#lex)
 * [Amazon Lightsail](#lightsail)
+* [Amazon MQ](#mq)
 * [Amazon Neptune](#neptune)
 * [AWS Network Firewall](#net_fw)
 * [OpsWorks](#opsworks)
@@ -477,6 +479,30 @@ Database activity streams aren't supported in Aurora Serverless.
     * S3 -indefinite time/user defined
     * As per Kinesis configuration and destination/consumer (S3, ES, Redshift, Lambda, Splunk, etc)
 
+
+## <a name="hsm"></a> AWS CloudHSM
+* Log coverage:
+    * HSM Audit logging
+    * Details: https://docs.aws.amazon.com/cloudhsm/latest/userguide/get-audit-logs-from-cloudwatch.html
+* Default status and how to enable:
+    * CloudWatch integration is enabled by default
+    * It cannot be disabled or turned off, and no settings can prevent AWS CloudHSM from exporting the logs to CloudWatch Logs
+* Exceptions and Limits:
+* Log record/file format:
+    * Each HSM instance generates its own log
+    * Each log event has a time stamp and sequence number that indicate the order of events and help you detect any log tampering
+* Delivery latency:
+    * as per CloudWatchLogs
+* Transport/Encryption in transit:
+    * as per CloudWatchLogs
+* Supported log Destinations:
+    * CloudWatchLogs
+* Encryption at rest:
+    * as per CloudWatchLogs
+* Data residency(AWS Region):
+    * any region
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
 
 ## <a name="code_build"></a> AWS CodeBuild
 * Log coverage:
@@ -1451,6 +1477,31 @@ Database activity streams aren't supported in Aurora Serverless.
 * Data residency(AWS Region):
 * Retention capabilities:
 
+## <a name="mq"></a> Amazon MQ
+* Log coverage:
+    * ActiveMQ logs
+    * RabbitMQ logs.
+    * Details: https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/security-logging-monitoring-configure-cloudwatch.html
+* Default status and how to enable:
+    * Disabled by default.
+    * To enable:
+        * ActiveMQ: https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/configure-logging-monitoring-activemq.html
+        * RabbitMQ: https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/security-logging-monitoring-rabbitmq.html
+* Exceptions and Limits:
+    * Audit logging is not supported for RabbitMQ brokers
+* Log record/file format:
+* Delivery latency:
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CloudWatch Logs
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+    * As per CloudWatchLogs
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
 
 ## <a name="neptune"></a> Amazon Neptune
 * Log coverage:
@@ -2065,35 +2116,141 @@ https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.ht
 
 **Service coverage:**
 
-* Logs from Amazon EC2 Instances
-    * *Logs Retrieval:* AWS provide agent (several different version are available)
+* AWS App Mesh
+    * *Logs Retrieval:* on host agent must be installed 
     * *Delivery schedule:* as per agent settings
     * *Data residency:* any region
-* Route 53 DNS Queries
+* AWS AppSync
     * *Logs Retrieval:* Service push
-    * *Delivery schedule:*
-    * *Data residency:* 	US East (N. Virginia) Region only
-* VPC Flow Logs:
-    * *Logs Retrieval:* Service push: https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-cwl.html
     * *Delivery schedule:* 
-    * *Data residency:* 
-* Lambda function Logs
+    * *Data residency:* any region
+* API Gateway
     * *Logs Retrieval:* Service push
     * *Delivery schedule:* 
     * *Data residency:* any aws region
-* Amazon RDS Database Log
+* AWS Batch
+    * *Logs Retrieval:* on host agent must be installed 
+    * *Delivery schedule:* as per agent settings
+    * *Data residency:* any region
+* Amazon Chime
     * *Logs Retrieval:* Service push
-    * *Delivery schedule:* as per DB engine configuration
+    * *Delivery schedule:* 
+    * *Data residency:* any region
+* AWS CloudHSM
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any region
+* AWS CodeBuild
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any region
+* AWS CodeDeploy
+    * *Logs Retrieval:* on host agent must be installed 
+    * *Delivery schedule:* as per agent settings
+    * *Data residency:* any region
+* Amazon Connect
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any region
+* AWS DataSync
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any region
+* AWS Directory Service
+    * *Logs Retrieval:* Service (instance) push
+    * *Delivery schedule:* 
+    * *Data residency:* any region
+* AWS DMS (Database Migration Service)
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any region
+* Amazon DocumentDB
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any region
+* AWS Global Accelerator flow logs
+    * *Logs Retrieval:* Service push through s3 : https://docs.aws.amazon.com/global-accelerator/latest/dg/monitoring-global-accelerator.flow-logs.html#monitoring-global-accelerator.flow-logs-publishing-S3
+    * *Delivery schedule:* as per agent configuration
+    * *Data residency:* any aws region
+* Amazon EC2 Instances
+    * *Logs Retrieval:* AWS provide agent (several different version are available)
+    * *Delivery schedule:* as per agent settings
+    * *Data residency:* any region
+* Amazon ECS (AWS Fargate)
+    * *Logs Retrieval:* via supported log driver
+    * *Delivery schedule:* 
+    * *Data residency:* any aws region
+* Amazon EKS (Elastic Kubernetes Service)
+    * *Logs Retrieval:* service push
+    * *Delivery schedule:* 
+    * *Data residency:* any aws region
+* Elastic Beanstalk
+    * *Logs Retrieval:* Agent push
+    * *Delivery schedule:* as per agent/service configuration
     * *Data residency:* any aws region
 * Kinesis Data Firehose
     * *Logs Retrieval:* Service push
     * *Delivery schedule:* 
     * *Data residency:* any aws region
-* Amazon ECS (AWS Fargate)
+* AWS IoT Greengrass
     * *Logs Retrieval:* Service push
     * *Delivery schedule:* 
     * *Data residency:* any aws region
-* API Gateway
+* Amazon Image Builder (EC2)
+    * *Logs Retrieval:* Agent push
+    * *Delivery schedule:* as per agent/service configuration
+    * *Data residency:* any aws region
+* Amazon Kafka (Managed Streaming for Apache Kafka)
+    * *Logs Retrieval:* Agent push
+    * *Delivery schedule:* as per agent/service configuration
+    * *Data residency:* any aws region
+* Amazon Kendra
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any aws region
+* Amazon Kinesis Data Analytics
+    * *Logs Retrieval:* Agent push
+    * *Delivery schedule:* as per agent/service configuration
+    * *Data residency:* any aws region
+* Lambda function Logs
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any aws region
+* Amazon Lex
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any aws region
+* Amazon MQ
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any aws region
+* AWS Network Firewall
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any aws region
+* OpsWorks
+    * *Logs Retrieval:* OpsWorks Stacks agent push
+    * *Delivery schedule:* as per agent configuration
+    * *Data residency:* any aws region
+* Amazon RDS Database Log
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* as per DB engine configuration
+    * *Data residency:* any aws region
+* Route 53 
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:*
+    * *Data residency:* 	
+        * DNS Queries: US East (N. Virginia) Region only
+        * Resolver: any aws region
+* Amazon SageMaker
+    * *Logs Retrieval:* Agent push
+    * *Delivery schedule:* as per agent/service configuration
+    * *Data residency:* any aws region
+* Amazon SNS (Simple Notification Service)
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
+    * *Data residency:* any aws region
+* AWS Step Functions
     * *Logs Retrieval:* Service push
     * *Delivery schedule:* 
     * *Data residency:* any aws region
@@ -2101,17 +2258,17 @@ https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.ht
     * *Logs Retrieval:* Agent push
     * *Delivery schedule:* as per agent configuration
     * *Data residency:* any aws region
-* Elastic Beanstalk
-    * *Logs Retrieval:* Agent push
-    * *Delivery schedule:* as per agent/service configuration
+* VPC Flow Logs:
+    * *Logs Retrieval:* Service push: https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-cwl.html
+    * *Delivery schedule:* 
+    * *Data residency:* 
+* Amazon WorkDocs
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
     * *Data residency:* any aws region
-* OpsWorks
-    * *Logs Retrieval:* OpsWorks Stacks agent push
-    * *Delivery schedule:* as per agent configuration
-    * *Data residency:* any aws region
-* AWS Global Accelerator flow logs
-    * *Logs Retrieval:* Service push through s3 : https://docs.aws.amazon.com/global-accelerator/latest/dg/monitoring-global-accelerator.flow-logs.html#monitoring-global-accelerator.flow-logs-publishing-S3
-    * *Delivery schedule:* as per agent configuration
+* Amazon WorkMail
+    * *Logs Retrieval:* Service push
+    * *Delivery schedule:* 
     * *Data residency:* any aws region
 
 **Encryption at REST:**
