@@ -49,6 +49,8 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon Lightsail](#lightsail)
 * [Amazon Neptune](#neptune)
 * [AWS Network Firewall](#net_fw)
+* [OpsWorks](#opsworks)
+* [Amazon (QLDB) Quantum Ledger Database](#ledger)
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -65,7 +67,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS Systems Manager](#sysman)
 
 
-* [OpsWorks](#opsworks)
+
 
 
 * [CloudWatch Logs](#cloudwatchlogs)
@@ -1524,10 +1526,70 @@ Database activity streams aren't supported in Aurora Serverless.
 * Encryption at rest:
     * SSE-KMS or CMK-KMS
 * Data residency(AWS Region):
+    * regional
 * Retention capabilities:
+    * as per S3
+    * as per CloudWatch Logs
 
 
+## <a name="opsworks"></a> OpsWorks
+* Log coverage:
+    * Chef and application logs.
+    * Details: https://docs.aws.amazon.com/opsworks/latest/userguide/monitoring-cloudwatch-logs.html
+* Default status and how to enable:
+    * Local filesystem:
+        * Enabled by default
+    * CloudWatch Logs:
+        * Disabled by default
+        * to enable: you enable CloudWatch Logs at the layer level in AWS OpsWorks Stacks.
+* Exceptions and Limits:
+    * CloudWatch Logs integration works with Chef 11.10 and Chef 12 Linux-based stacks. 
+* Log record/file format:
+    * OS/app specific
+    * Log groups for AWS OpsWorks Stacks data have names that match the following pattern:
+        * stack_name/layer_name/chef_log_name
+    * Custom logs have names that match the following pattern:
+        * /stack_name/layer_short_name/file_path_name.
+* Delivery latency:
+    * as per  AWS OpsWorks Stacks agent
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CloudWatch Logs
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
 
+## <a name="ledger"></a> Amazon (QLDB) Quantum Ledger Database
+* Log coverage:
+    * every document revision
+    * Details: https://docs.aws.amazon.com/qldb/latest/developerguide/streams.html
+* Default status and how to enable:
+    * Disabled by default
+* Exceptions and Limits:
+    * Not a real log but rather stream that captures every document revision that is committed to your journal
+    * QLDB streams provide an at-least-once delivery guarantee
+* Log record/file format:
+    * A QLDB stream writes your data to Kinesis Data Streams in three types of records: 
+        * control
+        * block summary
+        * revision details.
+    * Details: https://docs.aws.amazon.com/qldb/latest/developerguide/streams.records.html
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * Kinesis Data Streams
+* Encryption at rest:
+* Data residency(AWS Region):
+* Retention capabilities:
+    * as per stream consumer application
+    * or per AWS or 3d part service such as:
+        * Elasticsearch Service (Amazon ES)
+        * Amazon Redshift
+        * Amazon Simple Storage Service (Amazon S3)
+        * Splunk
 
 ## <a name="vpcflowlogs"></a> VPC Flow logs
 * Log coverage:
@@ -1775,26 +1837,6 @@ Database activity streams aren't supported in Aurora Serverless.
 
 
 
-
-
-## <a name="opsworks"></a> OpsWorks
-* Log coverage:
-    * To simplify the process of monitoring logs on multiple instances, AWS OpsWorks Stacks supports Amazon CloudWatch Logs
-    * https://docs.aws.amazon.com/opsworks/latest/userguide/monitoring-cloudwatch-logs.html
-* Exceptions and Limits:
-* Log record/file format:
-    * OS/app specifi
-* Delivery latency:
-    * as per  AWS OpsWorks Stacks agent
-* Transport/Encryption in transit:
-    * internal to AWS
-* Supported log Destinations:
-    * CloudWatch Logs
-* Encryption at rest:
-    * As per CloudWatchLogs configuration
-* Data residency(AWS Region):
-* Retention capabilities:
-    * CloudWatch logs: indefinite time/user defined
 
 
 # AWS Built-in Centralized logging capabilities
