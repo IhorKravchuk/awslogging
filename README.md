@@ -56,23 +56,13 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon Route53](#r53)
 * [Amazon S3](#s3accesslogs)
 * [Amazon SageMaker](#sage_maker)
-
-* [VPC Flow Logs](#vpcflowlogs)
-
-
-
-
-
-
-
-
-* [AWS WAF](#waf)
-
+* [Amazon SNS (Simple Notification Service)](#sns)
+* [AWS Step Functions](#step)
 * [AWS Systems Manager](#sysman)
-
-
-
-
+* [Amazon VPC (Virtual Private Cloud)](#vpcflowlogs)
+* [AWS WAF](#waf)
+* [Amazon WorkDocs](#doc)
+* [Amazon WorkMail](#mail)
 
 * [CloudWatch Logs](#cloudwatchlogs)
 
@@ -1802,14 +1792,101 @@ Database activity streams aren't supported in Aurora Serverless.
     * as per CloudWatch Logs
 
 
+## <a name="sns"></a> Amazon SNS (Simple Notification Service)
+* Log coverage:
+    * SMS (Short Message Service) delivery logs
+        * log for successful SMS delivery
+        * log for failed SMS delivery
+    * Details: https://docs.aws.amazon.com/sns/latest/dg/sms_stats_cloudwatch.html
+* Default status and how to enable:
+    * Disabled by default.
+    * To enable: Text messaging (SMS) page, in the Text messaging preferences section, in the Edit text messaging preferences page, in the Delivery status logging section
+* Exceptions and Limits:
+* Log record/file format:
+    * JSON
+* Delivery latency:
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CloudWatch Logs
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+    * As per CloudWatchLogs
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
 
-## <a name="vpcflowlogs"></a> VPC Flow logs
+
+## <a name="step"></a> AWS Step Functions
+* Log coverage:
+    * Execution history
+    * You can choose from OFF, ALL, ERROR, or FATAL.
+    * Details: https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html
+* Default status and how to enable:
+    * Step Function console:
+        * Standard Workflows
+            * Enabled by default.
+        * Express Workflows
+            * Disabled by default.
+    * CloudWatch Logs:
+        * Standard Workflows
+            *  Disabled by default.
+        * Express Workflows
+            * Enabled by default.
+* Exceptions and Limits:
+    * If escaped input or escaped output sent to CloudWatch Logs exceeds 248KB, it will be truncated as a result of CloudWatch Logs quotas.
+    * You can determine whether a payload has been truncated by reviewing the inputDetails and outputDetails properties
+* Log record/file format:
+    * You can configure Log level and choose from OFF, ALL, ERROR, or FATAL.
+    * Details: https://docs.aws.amazon.com/step-functions/latest/dg/cloudwatch-log-level.html
+* Delivery latency:
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * Step Function console 
+    * CloudWatch Logs
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
+## <a name="sysman"></a> AWS Systems Manager
+* Log coverage:
+    * AWS Systems Manager Agent is Amazon software that runs on your Amazon EC2 instances and your hybrid instances that are configured for Systems Manager (hybrid instances).
+    you can configure SSM Agent to send log data to Amazon CloudWatch Logs
+    * Details: https://docs.aws.amazon.com/systems-manager/latest/userguide/monitoring-ssm-agent.html
+* Default status and how to enable:
+    * Disabled by default.
+    * you can configure SSM Agent to send log data to Amazon CloudWatch Logs
+* Exceptions and Limits:
+    * Note: The unified CloudWatch Agent has replaced SSM Agent as the tool for sending log data to Amazon CloudWatch Logs
+* Log record/file format:
+    * system specific logs
+* Delivery latency:
+    * as per agent settings
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * CloudWatch Logs
+* Encryption at rest:
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+    * As per CloudWatchLogs
+* Retention capabilities:
+    * CloudWatch logs: indefinite time/user defined
+
+
+## <a name="vpcflowlogs"></a> Amazon VPC (Virtual Private Cloud) - VPC Flow logs
 * Log coverage:
     * VPC
     * Subnet
     * Network interface
     * accepted traffic, rejected traffic, or all traffic
-    https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html
+    * Details: https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html
+* Default status and how to enable:
+    * Disabled by default.
 * Exceptions and Limits:
     * https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html#flow-logs-limitations
     * Flow logs do not capture all IP traffic. The following types of traffic are not logged:
@@ -1863,17 +1940,59 @@ Database activity streams aren't supported in Aurora Serverless.
 
 
 
-
-
-
 ## <a name="waf"></a> AWS WAF	
 * Log coverage:
-    * You can enable logging to get detailed information about traffic that is analyzed by your web ACL. Information that is contained in the logs include the time that AWS WAF received the request from your AWS resource, detailed information about the request, and the action for the rule that each request matched.
-    * https://docs.aws.amazon.com/waf/latest/developerguide/logging.html
+    *  Detailed information about traffic that is analyzed by your web ACL. 
+    * Information that is contained in the logs:
+        * the time that AWS WAF received the request from your AWS resource
+        * detailed information about the request
+        * the action for the rule that each request matched.
+    * Details: https://docs.aws.amazon.com/waf/latest/developerguide/logging.html
+* Default status and how to enable:
+    * Disabled by default.
+    * When you successfully enable logging, AWS WAF will create a service linked role with the necessary permissions to write logs to the Amazon Kinesis Data Firehose. 
 * Exceptions and Limits:
+    * Amazon Kinesis Data Firehose must be pre-created:
+        * Names should be starting with the prefix aws-waf-logs-.
+        * Do not choose Kinesis stream as your source.
 * Log record/file format:
     * json
     * One AWS WAF log is equivalent to one Kinesis Data Firehose record.
+    * Log fields:
+        * timestamp: The timestamp in milliseconds.
+        * formatVersion: The format version for the log.
+        * webaclId: The GUID of the web ACL.
+        * terminatingRuleId: The ID of the rule that terminated the request. If nothing terminates the request, the value is Default_Action.
+        * terminatingRuleType: The type of rule that terminated the request. Possible values: RATE_BASED, REGULAR, GROUP, and MANAGED_RULE_GROUP.
+        * action: The action. Possible values for a terminating rule: ALLOW and BLOCK. COUNT is not a valid value for a terminating rule.
+        * terminatingRuleMatchDetails: Detailed information about the terminating rule that matched the request. A terminating rule has an action that ends the inspection process against a web request. Possible actions for a terminating rule are ALLOW and BLOCK. This is only populated for SQL injection and cross-site scripting (XSS) match rule statements. As with all rule statements that inspect for more than one thing, AWS WAF applies the action on the first match and stops inspecting the web request. A web request with a terminating action could contain other threats, in addition to the one reported in the log.
+        * httpSourceName: The source of the request. Possible values: CF for Amazon CloudFront, APIGW for Amazon API Gateway, ALB for Application Load Balancer, and APPSYNC for AWS AppSync.
+        * httpSourceId: The source ID. This field shows the ID of the associated resource.
+        * ruleGroupList: The list of rule groups that acted on this request. In the preceding code example, there is only one.
+        * ruleGroupId: The ID of the rule group. If the rule blocked the request, the ID for ruleGroupID is the same as the ID for terminatingRuleId.
+        * terminatingRule: The rule within the rule group that terminated the request. If this is a non-null value, it also contains a ruleid and action. In this case, the action is always BLOCK.
+        * nonTerminatingMatchingRules: The list of non-terminating rules in the rule group that match the request. These are always COUNT rules (non-terminating rules that match).
+        * action (nonTerminatingMatchingRules group): This is always COUNT (non-terminating rules that match).
+        * ruleId (nonTerminatingMatchingRules group): The ID of the rule within the rule group that matches the request and was non-terminating. That is, COUNT rules.
+        * ruleMatchDetails (nonTerminatingMatchingRules group): Detailed information about the rule that matched the request. This field is only populated for SQL injection and cross-site scripting (XSS) match rule statements.
+        * excludedRules: The list of rules in the rule group that you have excluded. The action for these rules is set to COUNT.
+        * exclusionType (excludedRules group): A type that indicates that the excluded rule has the action COUNT.
+        * ruleId (excludedRules group): The ID of the rule within the rule group that is excluded.
+        * rateBasedRuleList: The list of rate-based rules that acted on the request.
+        * rateBasedRuleId: The ID of the rate-based rule that acted on the request. If this has terminated the request, the ID for rateBasedRuleId is the same as the ID for terminatingRuleId.
+        * limitKey: The field that AWS WAF uses to determine if requests are likely arriving from a single source and thus subject to rate monitoring. Possible value: IP.
+        * maxRateAllowed: The maximum number of requests, which have an identical value in the field that is specified by limitKey, allowed in a five-minute period. If the number of requests exceeds the maxRateAllowed and the other predicates specified in the rule are also met, AWS WAF triggers the action that is specified for this rule.
+        * httpRequest: The metadata about the request.
+        * clientIp: The IP address of the client sending the request.
+        * country: The source country of the request. If AWS WAF is unable to determine the country of origin, it sets this field to -.
+        * headers: The list of headers.
+        * uri: The URI of the request. The preceding code example demonstrates what the value would be if this field had been redacted.
+        * args: The query string.
+        * httpVersion: The HTTP version.
+        * httpMethod: The HTTP method in the request.
+        * requestId: The ID of the request, which is generated by the underlying host service. For Application Load Balancer, this is the trace ID. For all others, this is the request ID.
+        * limitKey: Indicates the IP address source that AWS WAF should use to aggregate requests for rate limiting by a rate-based rule. Possible values are IP, for web request origin, and FORWARDED_IP, for an IP forwarded in a header in the request.
+        * limitValue: The IP address used by a rate-based rule to aggregate requests for rate limiting. If a request contains an IP address that isn't valid, the limitvalue is INVALID.
 * Delivery latency:
     * near real time
 * Transport/Encryption in transit:
@@ -1886,30 +2005,55 @@ Database activity streams aren't supported in Aurora Serverless.
 * Retention capabilities:
     * as for Amazon Kinesis Data Firehose
 
-
-## <a name="sysman"></a> AWS Systems Manager
+## <a name="doc"></a> Amazon WorkDocs
 * Log coverage:
-    * AWS Systems Manager Agent is Amazon software that runs on your Amazon EC2 instances and your hybrid instances that are configured for Systems Manager (hybrid instances).
-    you can configure SSM Agent to send log data to Amazon CloudWatch Logs
-    * https://docs.aws.amazon.com/systems-manager/latest/userguide/monitoring-ssm-agent.html
+    * Site-wide activity feed
+    * Details: https://docs.aws.amazon.com/workdocs/latest/adminguide/site-activity.html
+* Default status and how to enable:
+    * Disabled by default
+    * To enable this feature, you must first install Amazon WorkDocs Companion
 * Exceptions and Limits:
-    * Note: The unified CloudWatch Agent has replaced SSM Agent as the tool for sending log data to Amazon CloudWatch Logs
 * Log record/file format:
-    * system specific logs
+    * could be exported as .csv and .json  
 * Delivery latency:
-    * as per agent settings
 * Transport/Encryption in transit:
-    * internal to AWS
 * Supported log Destinations:
-    * CloudWatch Logs
+    * Internal WorkDocs service
 * Encryption at rest:
-    * As per CloudWatchLogs configuration
 * Data residency(AWS Region):
-    * As per CloudWatchLogs
 * Retention capabilities:
-    * CloudWatch logs: indefinite time/user defined
 
-
+## <a name="mail"></a> Amazon WorkMail
+* Log coverage:
+    * Tracks email messages for your organization
+    * Details: https://docs.aws.amazon.com/workmail/latest/adminguide/tracking.html
+* Default status and how to enable:
+    * Disabled by default
+* Exceptions and Limits:
+    * Note: Creates an AWS Identity and Access Management service-linked role – **AmazonWorkMailEvents**.
+* Log record/file format:
+    * CloudWatch log group:
+        *  /aws/workmail/emailevents/organization-alias.
+    * Events being recorder:
+        * ORGANIZATION_EMAIL_RECEIVED
+        * MAILBOX_EMAIL_DELIVERED
+        * RULE_APPLIED
+        * JOURNALING_INITIATED
+        * INCOMING_EMAIL_BOUNCED
+        * OUTGOING_EMAIL_SUBMITTED
+        * OUTGOING_EMAIL_SENT
+        * OUTGOING_EMAIL_BOUNCED
+        * DMARC_POLICY_APPLIED
+    * Details on the information being logged in each event: https://docs.aws.amazon.com/workmail/latest/adminguide/monitoring-workmail-cloudwatch.html#cw-events
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * CloudWatch Log
+* Encryption at rest:
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * CloudWatch Log retention is set to 30 days.
 
 
 
