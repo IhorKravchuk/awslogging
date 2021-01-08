@@ -51,6 +51,9 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [AWS Network Firewall](#net_fw)
 * [OpsWorks](#opsworks)
 * [Amazon (QLDB) Quantum Ledger Database](#ledger)
+* [Amazon RDS (Relational Database Service)](#rds)
+* [Amazon Redshift](#redshift)
+
 
 * [VPC Flow Logs](#vpcflowlogs)
 * [S3 Server Access Logs](#s3accesslogs)
@@ -58,8 +61,7 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Route53 DNS Query log](#r53)
 
 
-* [Amazon Redshift Logs](#redshift)
-* [Amazon RDS Database Log](#rds)
+
 
 
 * [AWS WAF](#waf)
@@ -1591,6 +1593,70 @@ Database activity streams aren't supported in Aurora Serverless.
         * Amazon Simple Storage Service (Amazon S3)
         * Splunk
 
+
+## <a name="rds"></a>  Amazon RDS (Relational Database Service)
+* Log coverage:
+    * Amazon RDS Database Logs are  very specific to the database engine:
+    * You can view, download, and watch database logs using the Amazon RDS console, the AWS Command Line Interface (AWS CLI), or the Amazon RDS API
+    * Details: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.html
+* Default status and how to enable:
+    * Enabled by default for the service
+    * CloudWatch Logs integration needs to be configured
+* Exceptions and Limits:
+    * Viewing, downloading, or watching transaction logs is not supported.
+* Log record/file format:
+    * DataBase engine specific:
+        1. MariaDB Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.MariaDB.html
+        2. Microsoft SQL Server Database Log Files : https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.SQLServer.html
+        3. MySQL Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.MySQL.html
+        4. Oracle Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.Oracle.html
+        5. PostgreSQL Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.PostgreSQL.html
+* Delivery latency:
+    * DB engine specific
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * RDS console
+    * On DB servers itself
+    * CloudWatchLogs
+* Encryption at rest:
+    * As per DB instance encryption - AES-256 encryption
+    * As per CloudWatchLogs configuration
+* Data residency(AWS Region):
+* Retention capabilities:
+    * DB-stored logs retention depends on the Db engine (3-7 days)
+    * CloudWatch logs: indefinite time/user defined
+
+## <a name="redshift"></a> Amazon Redshift
+* Log coverage:
+    * Amazon Redshift logs information about connections and user activities in your database.
+    * Details: https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html
+* Default status and how to enable:
+    * Disabled by default
+    * Log files are not as current as the base system log tables, STL_USERLOG and STL_CONNECTION_LOG. Records that are older than, but not including, the latest record are copied to log files.
+* Log record/file format:
+    * Amazon Redshift logs information in the following log files:
+        1. Connection log — logs authentication attempts, and connections and disconnections.
+        2. User log — logs information about changes to database user definitions.
+            * Create user
+            * Drop user
+            * Alter user (rename)
+            * Alter user (alter properties)
+        3. User activity log — logs each query before it is run on the database.
+    * Logs format for each of the logs files can be found here: https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html#db-auditing-logs
+* Delivery latency:
+    * depends on the Redshift cluster load. More load - more often you get logs
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * S3 bucket
+* Encryption at rest:
+    * * S3 - AES256, only S3 SSE with amazon keys
+* Data residency(AWS Region):
+    * As per S3 bucket location
+* Retention capabilities:
+    * S3 -indefinite time/user defined
+
+
 ## <a name="vpcflowlogs"></a> VPC Flow logs
 * Log coverage:
     * VPC
@@ -1731,64 +1797,6 @@ Database activity streams aren't supported in Aurora Serverless.
 * Data residency(AWS Region):
     * The log group must be in the US East (N. Virginia) Region.
 * Retention capabilities:
-    * CloudWatch logs: indefinite time/user defined
-
-
-## <a name="redshift"></a> Amazon Redshift Logs
-* Log coverage:
-    * Amazon Redshift logs information about connections and user activities in your database.
-    * https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html
-* Exceptions and Limits:
-    * Log files are not as current as the base system log tables, STL_USERLOG and STL_CONNECTION_LOG. Records that are older than, but not including, the latest record are copied to log files.
-* Log record/file format:
-    * Amazon Redshift logs information in the following log files:
-        1. Connection log — logs authentication attempts, and connections and disconnections.
-        2. User log — logs information about changes to database user definitions.
-            * Create user
-            * Drop user
-            * Alter user (rename)
-            * Alter user (alter properties)
-        3. User activity log — logs each query before it is run on the database.
-    * Logs format for each of the logs files can be found here: https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html#db-auditing-logs
-* Delivery latency:
-    * depends on the Redshift cluster load. More load - more often you get logs
-* Transport/Encryption in transit:
-    * internal to AWS
-* Supported log Destinations:
-    * S3 bucket
-* Encryption at rest:
-    * * S3 - AES256, only S3 SSE with amazon keys
-* Data residency(AWS Region):
-    * As per S3 bucket location
-* Retention capabilities:
-    * S3 -indefinite time/user defined
-
-## <a name="rds"></a>  Amazon RDS Database Log
-* Log coverage:
-    * Amazon RDS Database Logs are  very specific to the database engine:
-    * https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.html
-    * You can view, download, and watch database logs using the Amazon RDS console, the AWS Command Line Interface (AWS CLI), or the Amazon RDS API
-* Exceptions and Limits:
-    * Viewing, downloading, or watching transaction logs is not supported.
-* Log record/file format:
-    * DataBase engine specific:
-        1. MariaDB Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.MariaDB.html
-        2. Microsoft SQL Server Database Log Files : https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.SQLServer.html
-        3. MySQL Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.MySQL.html
-        4. Oracle Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.Oracle.html
-        5. PostgreSQL Database Log Files: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.Concepts.PostgreSQL.html
-* Delivery latency:
-    * DB engine specific
-* Transport/Encryption in transit:
-* Supported log Destinations:
-    * On DB servers itself
-    * CloudWatchLogs
-* Encryption at rest:
-    * As per DB instance encryption - AES-256 encryption
-    * As per CloudWatchLogs configuration
-* Data residency(AWS Region):
-* Retention capabilities:
-    * DB-stored logs retention depends on the Db engine (3-7 days)
     * CloudWatch logs: indefinite time/user defined
 
 
