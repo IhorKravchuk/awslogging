@@ -54,10 +54,11 @@ official doc (missing a lot of services): https://aws.amazon.com/answers/logging
 * [Amazon RDS (Relational Database Service)](#rds)
 * [Amazon Redshift](#redshift)
 * [Amazon Route53](#r53)
-
+* [Amazon S3](#s3accesslogs)
+* [Amazon SageMaker](#sage_maker)
 
 * [VPC Flow Logs](#vpcflowlogs)
-* [S3 Server Access Logs](#s3accesslogs)
+
 
 
 
@@ -1724,6 +1725,84 @@ Database activity streams aren't supported in Aurora Serverless.
     * S3 -indefinite time/user defined
 
 
+## <a name="s3accesslogs"></a> Amazon S3
+
+* Log coverage:
+    * Logs all requests to the data in the bucket
+    * Details: https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
+* Default status and how to enable:
+    * Disabled by default
+* Exceptions and Limits:
+    * Not guaranteed delivery
+* Log record/file format:
+    * Newline-delimited log records, Each log record represents one request and consists of space-delimited fields
+    * Each access log record provides details about a single access request, such as the requester, bucket name, request time, request action, response status, and an error code, if relevant.
+    * https://docs.aws.amazon.com/AmazonS3/latest/dev/LogFormat.html
+    * Fields:
+        1. Bucket Owner
+        2. Bucket
+        3. Time
+        4. Remote IP
+        5. Requester
+        6. Request ID
+        7. Operation
+        8. Key
+        9. Request-URI
+        10. HTTP status
+        11. Error Code
+        12. Bytes Sent
+        13. Object Size
+        14. Total Time
+        15. Turn-Around Time
+        16. Referrer
+        17. User-Agent
+        18. Version Id
+* Delivery latency:
+    * delivered on a best effort basis - normally hours.
+* Transport/Encryption in transit:
+    * internal to AWS
+* Supported log Destinations:
+    * S3 bucket, same as source bucket(with prefix) or different one
+* Encryption at rest:
+    * S3 - AES256, S3 SSE with amazon keys or KMS
+* Data residency(AWS Region):
+    * Same Region as the source bucket, bucket must be owned by the same AWS account
+* Retention capabilities:
+    * S3 -indefinite time/user defined
+
+## <a name="sage_maker"></a> Amazon SageMaker
+* Log coverage:
+    * processing jobs, training jobs, endpoints, transform jobs, notebook instances, and notebook instance lifecycle configurations, anything an algorithm container, a model container, or a notebook instance lifecycle configuration sends to **stdout** or **stderr** 
+    * Details: https://docs.aws.amazon.com/sagemaker/latest/dg/logging-cloudwatch.html
+* Default status and how to enable:
+    * Enabled by default (stdout or stderr)
+    * CloudWatch Logs integration should be configured
+* Exceptions and Limits:
+    * The /aws/sagemaker/NotebookInstances/[LifecycleConfigHook] log stream is created when you create a notebook instance with a lifecycle configuration
+    * For Inference Pipelines, if you don't provide container names, the platform uses **container-1, container-2**, and so on, corresponding to the order provided in the SageMaker model.
+* Log record/file format:
+    * Log Group Name: Logs Stream Name
+        * /aws/sagemaker/Endpoints/[EndpointName]: [production-variant-name]/[instance-id] or [production-variant-name]/[instance-id]/[container-name provided in SageMaker model] (For Inference Pipelines)
+        * /aws/sagemaker/groundtruth/WorkerActivity: aws/sagemaker/groundtruth/worker-activity/[requester-AWS-Id]-[region]/[timestamp]
+        * /aws/sagemaker/LabelingJobs: [labeling-job-name]
+        * /aws/sagemaker/NotebookInstances: [notebook-instance-name]/[LifecycleConfigHook] or [notebook-instance-name]/jupyter.log
+        * /aws/sagemaker/ProcessingJobs: [processing-job-name]/[hostname]-[epoch_timestamp]
+        * /aws/sagemaker/Studio: [domain-id]/[user-profile-name]/[app-type]/[app-name]
+        * /aws/sagemaker/TrainingJobs: [training-job-name]/algo-[instance-number-in-cluster]-[epoch_timestamp]
+        * /aws/sagemaker/TransformJobs: transform-job-name]/[instance-id]-[epoch_timestamp] or [transform-job-name]/[instance-id]-[epoch_timestamp]/data-log or [transform-job-name]/[instance-id]-[epoch_timestamp]/[container-name provided in SageMaker model] (For Inference Pipelines)
+* Delivery latency:
+* Transport/Encryption in transit:
+* Supported log Destinations:
+    * stdout or stderr
+    * CloudWatch Logs
+* Encryption at rest:
+* Data residency(AWS Region):
+    * regional
+* Retention capabilities:
+    * as per CloudWatch Logs
+
+
+
 ## <a name="vpcflowlogs"></a> VPC Flow logs
 * Log coverage:
     * VPC
@@ -1783,48 +1862,7 @@ Database activity streams aren't supported in Aurora Serverless.
     * CloudWatch Logs:  indefinitely and never expire. User can define retention policy per log group (indefinite, or from 1 day to 10years)
 
 
-## <a name="s3accesslogs"></a> S3 bucket access logs (S3 Server Access Logs)
 
-* Log coverage:
-    * Logs all requests to the data in the bucket
-    * https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
-* Exceptions and Limits:
-    * Not guaranteed delivery
-* Log record/file format:
-    * Newline-delimited log records, Each log record represents one request and consists of space-delimited fields
-    * Each access log record provides details about a single access request, such as the requester, bucket name, request time, request action, response status, and an error code, if relevant.
-    * https://docs.aws.amazon.com/AmazonS3/latest/dev/LogFormat.html
-    * Fields:
-        1. Bucket Owner
-        2. Bucket
-        3. Time
-        4. Remote IP
-        5. Requester
-        6. Request ID
-        7. Operation
-        8. Key
-        9. Request-URI
-        10. HTTP status
-        11. Error Code
-        12. Bytes Sent
-        13. Object Size
-        14. Total Time
-        15. Turn-Around Time
-        16. Referrer
-        17. User-Agent
-        18. Version Id
-* Delivery latency:
-    * delivered on a best effort basis - normally hours.
-* Transport/Encryption in transit:
-    * internal to AWS
-* Supported log Destinations:
-    * S3 bucket, same as source bucket(with prefix) or different one
-* Encryption at rest:
-    * S3 - AES256, S3 SSE with amazon keys or KMS
-* Data residency(AWS Region):
-    * Same Region as the source bucket, bucket must be owned by the same AWS account
-* Retention capabilities:
-    * S3 -indefinite time/user defined
 
 
 
